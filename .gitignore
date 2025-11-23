@@ -1,0 +1,105 @@
+# ======================
+# Xcode
+# ======================
+.DS_Store
+*.xcuserstate
+*.xcscmblueprint
+
+# User-specific files
+xcuserdata/
+*xcworkspace/xcuserdata/*
+*/xcuserdata/*
+
+# Project workspace
+*.xcworkspace
+*.xcworkspace/*
+project.xcworkspace/
+
+# Xcode derived data
+DerivedData/
+build/
+Build/
+
+# Xcode cache
+*.swiftpm
+.swiftpm/
+
+# iOS specific
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+
+# Archives
+*.xcarchive
+
+# SwiftLint cache
+.swiftlint_cache/
+.swiftlint.yaml
+
+# Firebase / GoogleService
+GoogleService-Info.plist
+GoogleService-Info.debug.plist
+GoogleService-Info.release.plist
+
+# Secrets / Keys
+*.env
+*.key
+*.pem
+*.p12
+
+# MacOS artifacts
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Icon?
+Icon?
+Icon?
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.lock
+*~
+
+# Vim / VSCode editors
+.vscode/
+*.code-workspace
+
+# Ruby
+.bundle/
+vendor/
+
+# SPM Plugins cache
+.swiftpm/xcode/
+.swiftpm/config/
+.swiftpm/repositories/
+
+# Xcode Preview cache
+.preview-thumbnails/
+.preview-thumbnails/*
+
+# Xcode logs
+xcdebugger/
