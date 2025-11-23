@@ -8,7 +8,7 @@ PROJECT_PATH="../miet_practice_application/miet_practice_application.xcodeproj"
 
 TESTS=(
     "miet-practice-application_unit_tests"   "$CACHE_DIR/UnitTestsResults.xcresult"
-#    "miet-practice-application_ui_tests"     "$CACHE_DIR/UITestsResults.xcresult"
+    "miet-practice-application_ui_tests"     "$CACHE_DIR/UITestsResults.xcresult"
 )
 
 # Создаём директорию Cache, если её нет
@@ -24,11 +24,12 @@ for ((i=0; i < ${#TESTS[@]}; i+=2)); do
     log_info "PID $pid"
     wait "$pid"
     status_unit=$?
-    log "Статус выхода: $status_unit"
 
     if [ $status_unit -ne 0 ]; then
-      log_error "Тесты со схемой ${SCHEME} завершились ошибкой."
-      exit 1
+        log_error "Тесты со схемой ${SCHEME} завершились ошибкой."
+        exit 1
+    else
+        log_success "Статус выхода $status_unit"
     fi
 
     echo ""

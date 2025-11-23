@@ -57,7 +57,6 @@ xcodebuild test \
 if [ $? -eq 0 ]; then
     echo ""
     log "Результаты сохранены в: $RESULT_PATH"
-    log_success "Тесты успешно завершены!"
     exit 0
 else
     echo ""

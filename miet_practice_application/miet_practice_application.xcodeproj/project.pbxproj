@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXContainerItemProxy section */
+		10CEF7982ED3794500AC44C3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1065AAD42ED1DDEC00B3D72D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1065AADB2ED1DDEC00B3D72D;
+			remoteInfo = miet_practice_application;
+		};
 		10CF52432ED3484100039144 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1065AAD42ED1DDEC00B3D72D /* Project object */;
@@ -18,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		1065AADC2ED1DDEC00B3D72D /* miet_practice_application.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = miet_practice_application.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		10CEF7922ED3794500AC44C3 /* miet-practice-application_ui_tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "miet-practice-application_ui_tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		10CF523F2ED3484100039144 /* miet-practice-application_unit_tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "miet-practice-application_unit_tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -25,6 +33,11 @@
 		1065AADE2ED1DDEC00B3D72D /* miet_practice_application */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = miet_practice_application;
+			sourceTree = "<group>";
+		};
+		10CEF7932ED3794500AC44C3 /* miet-practice-application_ui_tests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "miet-practice-application_ui_tests";
 			sourceTree = "<group>";
 		};
 		10CF52402ED3484100039144 /* miet-practice-application_unit_tests */ = {
@@ -36,6 +49,13 @@
 
 /* Begin PBXFrameworksBuildPhase section */
 		1065AAD92ED1DDEC00B3D72D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		10CEF78F2ED3794500AC44C3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -57,6 +77,7 @@
 			children = (
 				1065AADE2ED1DDEC00B3D72D /* miet_practice_application */,
 				10CF52402ED3484100039144 /* miet-practice-application_unit_tests */,
+				10CEF7932ED3794500AC44C3 /* miet-practice-application_ui_tests */,
 				1065AADD2ED1DDEC00B3D72D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -66,6 +87,7 @@
 			children = (
 				1065AADC2ED1DDEC00B3D72D /* miet_practice_application.app */,
 				10CF523F2ED3484100039144 /* miet-practice-application_unit_tests.xctest */,
+				10CEF7922ED3794500AC44C3 /* miet-practice-application_ui_tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -94,6 +116,29 @@
 			productName = miet_practice_application;
 			productReference = 1065AADC2ED1DDEC00B3D72D /* miet_practice_application.app */;
 			productType = "com.apple.product-type.application";
+		};
+		10CEF7912ED3794500AC44C3 /* miet-practice-application_ui_tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 10CEF79C2ED3794500AC44C3 /* Build configuration list for PBXNativeTarget "miet-practice-application_ui_tests" */;
+			buildPhases = (
+				10CEF78E2ED3794500AC44C3 /* Sources */,
+				10CEF78F2ED3794500AC44C3 /* Frameworks */,
+				10CEF7902ED3794500AC44C3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				10CEF7992ED3794500AC44C3 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				10CEF7932ED3794500AC44C3 /* miet-practice-application_ui_tests */,
+			);
+			name = "miet-practice-application_ui_tests";
+			packageProductDependencies = (
+			);
+			productName = "miet-practice-application_ui_tests";
+			productReference = 10CEF7922ED3794500AC44C3 /* miet-practice-application_ui_tests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 		10CF523E2ED3484100039144 /* miet-practice-application_unit_tests */ = {
 			isa = PBXNativeTarget;
@@ -131,6 +176,10 @@
 					1065AADB2ED1DDEC00B3D72D = {
 						CreatedOnToolsVersion = 26.1;
 					};
+					10CEF7912ED3794500AC44C3 = {
+						CreatedOnToolsVersion = 26.1;
+						TestTargetID = 1065AADB2ED1DDEC00B3D72D;
+					};
 					10CF523E2ED3484100039144 = {
 						CreatedOnToolsVersion = 26.1;
 						TestTargetID = 1065AADB2ED1DDEC00B3D72D;
@@ -153,12 +202,20 @@
 			targets = (
 				1065AADB2ED1DDEC00B3D72D /* miet_practice_application */,
 				10CF523E2ED3484100039144 /* miet-practice-application_unit_tests */,
+				10CEF7912ED3794500AC44C3 /* miet-practice-application_ui_tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		1065AADA2ED1DDEC00B3D72D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		10CEF7902ED3794500AC44C3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -182,6 +239,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		10CEF78E2ED3794500AC44C3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		10CF523B2ED3484100039144 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -192,6 +256,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		10CEF7992ED3794500AC44C3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1065AADB2ED1DDEC00B3D72D /* miet_practice_application */;
+			targetProxy = 10CEF7982ED3794500AC44C3 /* PBXContainerItemProxy */;
+		};
 		10CF52442ED3484100039144 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1065AADB2ED1DDEC00B3D72D /* miet_practice_application */;
@@ -389,6 +458,44 @@
 			};
 			name = Release;
 		};
+		10CEF79A2ED3794500AC44C3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "prak.yegor.miet-practice-application-ui-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = miet_practice_application;
+			};
+			name = Debug;
+		};
+		10CEF79B2ED3794500AC44C3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "prak.yegor.miet-practice-application-ui-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = miet_practice_application;
+			};
+			name = Release;
+		};
 		10CF52462ED3484100039144 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -446,6 +553,15 @@
 			buildConfigurations = (
 				1065AAE82ED1DDED00B3D72D /* Debug */,
 				1065AAE92ED1DDED00B3D72D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		10CEF79C2ED3794500AC44C3 /* Build configuration list for PBXNativeTarget "miet-practice-application_ui_tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				10CEF79A2ED3794500AC44C3 /* Debug */,
+				10CEF79B2ED3794500AC44C3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
