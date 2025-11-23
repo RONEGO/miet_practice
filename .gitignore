@@ -5,16 +5,18 @@
 *.xcuserstate
 *.xcscmblueprint
 
-# User-specific files
-xcuserdata/
-*xcworkspace/xcuserdata/*
-*/xcshareddata/*
-*/xcuserdata/*
-
 # Project workspace
 *.xcworkspace
 *.xcworkspace/*
 project.xcworkspace/
+
+xcuserdata/
+*xcworkspace/xcuserdata/*
+*/xcuserdata/*
+
+xcshareddata/
+*xcodeproj/xcshareddata/*
+*/xcshareddata/*
 
 # Xcode derived data
 DerivedData/
