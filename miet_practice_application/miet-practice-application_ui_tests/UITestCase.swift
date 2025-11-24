@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class miet_practice_application_ui_tests: XCTestCase {
+final class UITestCase: XCTestCase {
 
     @MainActor
     func testExample() throws {
