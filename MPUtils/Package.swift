@@ -6,11 +6,13 @@ import PackageDescription
 let package = Package(
     name: "MPUtils",
     platforms: [
-        .macOS(.v13)
+        .macOS(.v13),
+        .iOS(.v16)
     ],
     products: [
         .library(name: "MPCore", targets: ["MPCore"]),
         .library(name: "MPDTO", targets: ["MPDTO"]),
+        .executable(name: "MPResultParser", targets: ["MPResultParser"]),
         .executable(name: "MPResultReporter", targets: ["MPResultReporter"])
     ],
     dependencies: [
@@ -27,6 +29,15 @@ let package = Package(
             dependencies: [
                 "MPCore",
                 .product(name: "Vapor", package: "vapor")
+            ]
+        ),
+        .executableTarget(
+            name: "MPResultParser",
+            dependencies: [
+                "MPCore",
+                "MPDTO",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "XCResultKit", package: "XCResultKit")
             ]
         ),
         .executableTarget(

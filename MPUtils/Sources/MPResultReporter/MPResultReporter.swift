@@ -1,34 +1,104 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
+//
+//  MPResultReporter.swift
+//  MPUtils
+//
+//  Created by Egor Geronin on 29.11.2025.
+//
 
 import ArgumentParser
 import Foundation
 import XCResultKit
+import MPDTO
+import MPCore
 
 @main
-struct MPResultReporter: ParsableCommand {
-    @Argument(help: "The path to an `.xcresult` bundle")
-    var pathBundle: String
+struct MPResultReporter: AsyncParsableCommand {
+    @Argument(help: "Base url for endpoints")
+    var baseURL: String
 
-    private var parser: IResultParser { ResultParser() }
+    @Argument(help: "The path to a cache file where cache will be stored")
+    var cacheFilePath: String
 
-    func run() throws {
-        guard let url = URL(string: pathBundle) else { return }
-        let resultFile = XCResultFile(url: url)
+    @Flag(name: .customLong("run"), help: "Flag to run build")
+    var runBuild: Bool = false
+    
+    @Flag(name: .customLong("complete"), help: "Flag to complete build")
+    var complete: Bool = false
 
-        let result = try parser.parse(resultFile)
+    // Опции для --run
+    @Option(name: .customLong("task-id"), help: "Task ID (optional, only for --run)")
+    var taskId: String?
+    
+    @Option(name: .customLong("git-branch"), help: "Git branch (optional, only for --run)")
+    var gitBranch: String?
 
-        print("parser")
-        print("SUITE: \(result.type)")
-        result.cases.forEach { testCase in
-            print(
-                "\tCASE: \(testCase.name) | dur \(testCase.duration) | \(testCase.statusCode)"
+
+    @Option(name: .customLong("build-status"), help: "Build status (optional, only for --complete)")
+    var buildStatus: String?
+
+    func run() async throws {
+        guard let url = URL(string: baseURL) else {
+            return
+        }
+        let perfomer = RequestPerformer(baseURL: url)
+        
+        if runBuild {
+            try await sendRunRequest(
+                perfomer,
+                taskID: taskId,
+                gitBranch: gitBranch
             )
-            testCase.tests.forEach { test in
-                print(
-                    "\t\tTEST: \(test.name) | dur \(test.duration ?? -1) | \(test.statusCode)"
-                )
-            }
+        } else if complete {
+            try await sendCompleteRequest(perfomer)
+        } else {
+            throw NSError(domain: "Either --run or --complete flag is required", code: -1)
         }
     }
+    
+    private func sendRunRequest(
+        _ perfomer: IRequestPerformer,
+        taskID: String?,
+        gitBranch: String?
+    ) async throws {
+        let result = try await perfomer.perform(
+            RunEndpoint(
+                taskID: taskID,
+                gitBranch: gitBranch
+            )
+        )
+        let cache = MPResultReporterCache(buildID: result.buildId.uuidString)
+        try save(cache, to: cacheFilePath)
+    }
+    
+    private func sendCompleteRequest(
+        _ perfomer: IRequestPerformer
+    ) async throws {
+        guard
+            let buildStatusString = buildStatus,
+            let buildStatusValue = CompleteBuildRequestDTO.BuildStatusDTO(
+                rawValue: buildStatusString
+            )
+        else {
+            throw NSError(domain: "--build-status is required for --complete", code: -1)
+        }
+        
+        // Получаем build_id из кеша
+        let cache: MPResultReporterCache = try upload(from: cacheFilePath)
+        guard
+            let buildIDString = cache.buildID,
+            let buildID = UUID(uuidString: buildIDString)
+        else {
+            throw NSError(domain: "Build ID not found in cache or invalid", code: -1)
+        }
+        
+        let result = try await perfomer.perform(
+            CompleteEndpoint(
+                buildId: buildID,
+                buildStatus: buildStatusValue
+            )
+        )
+        
+        print("Build completed: \(result.message)")
+    }
 }
+

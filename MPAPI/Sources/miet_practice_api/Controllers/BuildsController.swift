@@ -64,12 +64,15 @@ struct BuildsController: RouteCollection {
         }
         
         // Валидируем новый статус (должен быть SUCCESS или FAILURE)
-        guard let newStatus = BuildStatusEnum(rawValue: request.buildStatus),
-              newStatus == .success || newStatus == .failure else {
-            throw Abort(.badRequest, reason: "Invalid build_status. Must be 'SUCCESS' or 'FAILURE'")
-        }
 
-        let newStatusCode = try BuildStatus.getCode(newStatus)
+        let newStatusCode =
+            switch request.buildStatus {
+            case .success:
+                try BuildStatus.getCode(.success)
+            case .failure:
+                try BuildStatus.getCode(.failure)
+            }
+
         // Обновляем сборку
         build.endedAt = endTime
         build.$status.id = newStatusCode
@@ -83,7 +86,7 @@ struct BuildsController: RouteCollection {
 
         return CompleteBuildResponseDTO(
             buildId: buildId,
-            message: "Build completed with status: \(newStatus.rawValue)"
+            message: "Build completed with status: \(request.buildStatus.rawValue)"
         )
     }
 }

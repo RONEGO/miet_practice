@@ -13,7 +13,7 @@ public struct RunBuildRequestDTO: Content {
     /// Git ветка (опционально)
     public var gitBranch: String?
     
-    public init(taskId: UUID? = nil, gitBranch: String? = nil) {
+    public init(taskId: UUID?, gitBranch: String?) {
         self.taskId = taskId
         self.gitBranch = gitBranch
     }

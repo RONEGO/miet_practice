@@ -87,7 +87,9 @@ log ""
 
 if [ "$TEST_STATUS" -eq 0 ]; then
     log_success "Тесты успешно пройдены."
+    exit 0
 else
     log_error "Тесты завершились ошибкой!"
+    exit 1
 fi
 

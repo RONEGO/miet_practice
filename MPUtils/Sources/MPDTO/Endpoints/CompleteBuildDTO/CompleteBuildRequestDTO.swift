@@ -11,11 +11,19 @@ public struct CompleteBuildRequestDTO: Content {
     public var buildId: UUID
     
     /// Статус завершения сборки (SUCCESS или FAILURE)
-    public var buildStatus: String
-    
-    public init(buildId: UUID, buildStatus: String) {
+    public var buildStatus: BuildStatusDTO
+
+    public init(buildId: UUID, buildStatus: BuildStatusDTO) {
         self.buildId = buildId
         self.buildStatus = buildStatus
     }
 }
 
+extension CompleteBuildRequestDTO {
+    public enum BuildStatusDTO: String, Codable, Sendable {
+        /// Удача
+        case success = "SUCCESS"
+        /// Неудача
+        case failure = "FAILURE"
+    }
+}
