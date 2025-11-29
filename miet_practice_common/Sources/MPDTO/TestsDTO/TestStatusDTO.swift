@@ -1,13 +1,14 @@
 //
-//  TestStatus.swift
-//  XcresultReporter
+//  TestStatusDTO.swift
+//  MPDTO
 //
 //  Created by Egor Geronin on 24.11.2025.
 //
 
 import Foundation
+import Vapor
 
-public enum TestStatus: Codable {
+public enum TestStatusDTO: Content {
     /// Неизвестный статус
     case unknown
     /// Успех
@@ -17,3 +18,4 @@ public enum TestStatus: Codable {
     /// Ошибка
     case failure
 }
+

@@ -1,14 +1,15 @@
 //
-//  TestCase.swift
-//  XcresultReporter
+//  TestCaseDTO.swift
+//  MPDTO
 //
 //  Created by Egor Geronin on 24.11.2025.
 //
 
 import Foundation
+import Vapor
 
-public struct TestCase: Codable {
-    enum CodingKeys: String, CodingKey {
+public struct TestCaseDTO: Content {
+    public enum CodingKeys: String, CodingKey {
         case name
         case statusCode = "status_code"
         case duration
@@ -16,19 +17,19 @@ public struct TestCase: Codable {
     }
 
     /// Название тестов
-    let name: String
+    public let name: String
     /// Статус тестов
-    let statusCode: TestStatus
+    public let statusCode: TestStatusDTO
     /// Длительность прохождения тестов
-    let duration: Double
+    public let duration: Double
     /// Тесты в вязанке
-    let tests: [Test]
+    public let tests: [TestDTO]
 
     public init(
         name: String,
-        statusCode: TestStatus,
+        statusCode: TestStatusDTO,
         duration: Double,
-        tests: [Test]
+        tests: [TestDTO]
     ) {
         self.name = name
         self.statusCode = statusCode
@@ -36,3 +37,4 @@ public struct TestCase: Codable {
         self.tests = tests
     }
 }
+

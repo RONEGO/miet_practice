@@ -1,11 +1,12 @@
 //
-//  TestFramework.swift
-//  XcresultReporter
+//  TestFrameworkDTO.swift
+//  MPDTO
 //
 //  Created by Egor Geronin on 24.11.2025.
 //
+import Vapor
 
-public enum TestFramework: String, Codable {
+public enum TestFrameworkDTO: String, Content {
     /// Неизвестный
     case unknown
     /// UI-тесты
@@ -13,3 +14,4 @@ public enum TestFramework: String, Codable {
     /// Unit-тесты
     case xctestUnit = "xctest_unit"
 }
+

@@ -1,22 +1,25 @@
 //
-//  TestSuite.swift
-//  XcresultReporter
+//  TestSuiteDTO.swift
+//  MPDTO
 //
 //  Created by Egor Geronin on 24.11.2025.
 //
-import Foundation
 
-public struct TestSuite: Codable {
+import Foundation
+import Vapor
+
+public struct TestSuiteDTO: Content {
     /// Тип набора тестов
-    let type: TestFramework
+    public let type: TestFrameworkDTO
     /// Везанки наборов тестов
-    let cases: [TestCase]
+    public let cases: [TestCaseDTO]
 
     public init(
-        type: TestFramework,
-        cases: [TestCase]
+        type: TestFrameworkDTO,
+        cases: [TestCaseDTO]
     ) {
         self.type = type
         self.cases = cases
     }
 }
+
