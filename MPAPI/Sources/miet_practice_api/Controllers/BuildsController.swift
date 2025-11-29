@@ -7,6 +7,7 @@ struct BuildsController: RouteCollection {
         let builds = routes.grouped("v1", "builds")
         builds.post("run", use: run)
         builds.patch("complete", use: completeBuild)
+        builds.post("test-results", use: submitTestResults)
     }
     
     /// POST /v1/builds/run
@@ -64,14 +65,7 @@ struct BuildsController: RouteCollection {
         }
         
         // Валидируем новый статус (должен быть SUCCESS или FAILURE)
-
-        let newStatusCode =
-            switch request.buildStatus {
-            case .success:
-                try BuildStatus.getCode(.success)
-            case .failure:
-                try BuildStatus.getCode(.failure)
-            }
+        let newStatusCode = try BuildsMapper.mapBuildStatusDTOToCode(request.buildStatus)
 
         // Обновляем сборку
         build.endedAt = endTime
@@ -87,6 +81,55 @@ struct BuildsController: RouteCollection {
         return CompleteBuildResponseDTO(
             buildId: buildId,
             message: "Build completed with status: \(request.buildStatus.rawValue)"
+        )
+    }
+    
+    /// POST /v1/builds/test-results
+    /// Сохраняет результаты тестов для сборки
+    func submitTestResults(req: Request) async throws -> SubmitTestResultsResponseDTO {
+        let request = try req.content.decode(SubmitTestResultsRequestDTO.self)
+        
+        // Проверяем существование сборки
+        guard try await Build.find(request.buildId, on: req.db).isSome else {
+            throw Abort(.notFound, reason: "Build with id \(request.buildId) not found")
+        }
+        
+        // Обрабатываем каждый набор тестов
+        for testSuiteDTO in request.testSuites {
+            // Преобразуем TestSuiteDTO в TestSuiteResult модель
+            let testSuite = try BuildsMapper.mapTestSuiteDTOToModel(
+                testSuiteDTO,
+                buildId: request.buildId
+            )
+            try await testSuite.save(on: req.db)
+            
+            guard let suiteId = testSuite.id else {
+                throw Abort(.internalServerError, reason: "Failed to generate test suite ID")
+            }
+            
+            // Обрабатываем каждый тест-кейс
+            for testCaseDTO in testSuiteDTO.cases {
+                // Преобразуем TestCaseDTO в TestCaseResult модель
+                let testCase = BuildsMapper.mapTestCaseDTOToModel(testCaseDTO, suiteId: suiteId)
+                try await testCase.save(on: req.db)
+                
+                guard let caseId = testCase.id else {
+                    throw Abort(.internalServerError, reason: "Failed to generate test case ID")
+                }
+                
+                // Обрабатываем каждый тест
+                for testDTO in testCaseDTO.tests {
+                    // Преобразуем TestDTO в TestResult модель
+                    let testResult = try BuildsMapper.mapTestDTOToModel(testDTO, caseId: caseId)
+                    try await testResult.save(on: req.db)
+                }
+            }
+        }
+        
+        return SubmitTestResultsResponseDTO(
+            buildId: request.buildId,
+            message: "Test results submitted successfully",
+            testSuitesCount: request.testSuites.count
         )
     }
 }

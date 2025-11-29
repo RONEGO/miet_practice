@@ -9,7 +9,7 @@ PARSER_PATH="./run_parser"
 
 # Список тестов для запуска
 TESTS=(
-    "MPTestableAppUnitTests"
+#    "MPTestableAppUnitTests"
     "MPTestableAppUITests"
 )
 

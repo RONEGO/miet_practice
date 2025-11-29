@@ -84,7 +84,7 @@ public final class ResultParser: IResultParser {
         switch testKind {
         case "app hosted":
             .xctestUnit
-        case "ui":
+        case "UI":
             .xctestUI
         default:
             .unknown
