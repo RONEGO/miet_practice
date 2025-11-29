@@ -1,5 +1,5 @@
 //
-//  XcresultParser.swift
+//  ResultParser.swift
 //  XcresultReporter
 //
 //  Created by Egor Geronin on 24.11.2025.
@@ -9,8 +9,8 @@ import XCResultKit
 import Foundation
 import MPDTO
 
-public final class XcresultParser: IXcresultParser {
-    public func parse(_ resultFile: XCResultFile) throws(XcresultParserError) -> TestSuiteDTO {
+public final class ResultParser: IResultParser {
+    public func parse(_ resultFile: XCResultFile) throws(ResultParserError) -> TestSuiteDTO {
         guard let invocationRecord = resultFile.getInvocationRecord() else {
             throw .noneInvocationRecord
         }

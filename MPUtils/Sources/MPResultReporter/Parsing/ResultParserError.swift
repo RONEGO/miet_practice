@@ -1,5 +1,5 @@
 //
-//  XcresultParserError.swift
+//  ResultParserError.swift
 //  XcresultReporter
 //
 //  Created by Egor Geronin on 24.11.2025.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum XcresultParserError: LocalizedError {
+public enum ResultParserError: LocalizedError {
     case noneInvocationRecord
     case oneTestTypePerFile
 

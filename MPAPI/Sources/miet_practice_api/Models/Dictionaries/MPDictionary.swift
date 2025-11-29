@@ -1,6 +1,6 @@
 //
 //  DictionaryEnum.swift
-//  miet_practice_api
+//  MPAPI
 //
 //  Created by Egor Geronin on 29.11.2025.
 //

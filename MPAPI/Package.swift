@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "miet_practice_api",
+    name: "MPAPI",
     platforms: [
        .macOS(.v13)
     ],

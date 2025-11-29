@@ -6,13 +6,11 @@ import Foundation
 import XCResultKit
 
 @main
-struct XcresultReporter: ParsableCommand {
+struct MPResultReporter: ParsableCommand {
     @Argument(help: "The path to an `.xcresult` bundle")
     var pathBundle: String
 
-    private var parser: IXcresultParser {
-        XcresultParser()
-    }
+    private var parser: IResultParser { ResultParser() }
 
     func run() throws {
         guard let url = URL(string: pathBundle) else { return }
