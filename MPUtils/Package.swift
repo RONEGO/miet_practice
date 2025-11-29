@@ -11,7 +11,7 @@ let package = Package(
     products: [
         .library(name: "MPCore", targets: ["MPCore"]),
         .library(name: "MPDTO", targets: ["MPDTO"]),
-        .executable(name: "MP_RESULT_REPORTER", targets: ["MPResultReporter"])
+        .executable(name: "MPResultReporter", targets: ["MPResultReporter"])
     ],
     dependencies: [
         .package(url: "https://github.com/vapor/vapor.git", from: "4.115.0"),

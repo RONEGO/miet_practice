@@ -11,6 +11,6 @@ struct CompleteBuildRequestDTO: Content {
     var buildId: UUID
     
     /// Статус завершения сборки (SUCCESS или FAILURE)
-    var buildStatus: String
+    var buildStatus: BuildStatusEnum
 }
 

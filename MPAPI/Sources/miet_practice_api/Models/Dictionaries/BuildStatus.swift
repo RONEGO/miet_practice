@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-enum BuildStatusEnum: String, MPDictionaryEnum {
+enum BuildStatusEnum: String, MPCodedDictionaryEnum {
     /// В процессе сборки
     case running = "RUNNING"
     /// Успешная сборка
@@ -13,7 +13,7 @@ enum BuildStatusEnum: String, MPDictionaryEnum {
 }
 
 /// Справочник статусов сборок
-final class BuildStatus: MPDictionary, @unchecked Sendable {
+final class BuildStatus: MPCodedDictionary, @unchecked Sendable {
     static let schema = DatabaseSchema.buildStatus.rawValue
 
     /// Код статуса сборки (первичный ключ)
@@ -24,7 +24,7 @@ final class BuildStatus: MPDictionary, @unchecked Sendable {
 
     init() { }
 
-    init(code: Int? = nil, value: BuildStatusEnum) {
+    init(id: Int?, value: BuildStatusEnum) {
         self.id = id
         self.value = value
     }

@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-enum TaskStatusEnum: String, MPDictionaryEnum {
+enum TaskStatusEnum: String, MPCodedDictionaryEnum {
     /// Новая задача
     case new = "NEW"
     /// В работе
@@ -17,7 +17,7 @@ enum TaskStatusEnum: String, MPDictionaryEnum {
 }
 
 /// Справочник статусов задачи
-final class TaskStatus: MPDictionary, @unchecked Sendable {
+final class TaskStatus: MPCodedDictionary, @unchecked Sendable {
     static let schema = DatabaseSchema.taskStatus.rawValue
 
     /// Код статуса задачи (первичный ключ)
@@ -28,8 +28,8 @@ final class TaskStatus: MPDictionary, @unchecked Sendable {
 
     init() { }
 
-    init(code: Int? = nil, value: TaskStatusEnum) {
-        self.id = code
+    init(id: Int?, value: TaskStatusEnum) {
+        self.id = id
         self.value = value
     }
 }

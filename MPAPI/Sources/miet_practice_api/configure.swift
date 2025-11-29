@@ -14,6 +14,7 @@ public func configure(_ app: Application) async throws {
         tls: .prefer(try .init(configuration: .clientDefault)))
     ), as: .psql)
 
+    /// Создание таблиц
     app.migrations.add(CreateLookupTables())
     app.migrations.add(CreateUserTable())
     app.migrations.add(CreateTaskTable())
@@ -21,16 +22,16 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(CreateTestResultTables())
     app.migrations.add(CreateNotificationTable())
 
+    /// Наполнение словарей
+    app.migrations.add(MPCodedDictionaryGeneration<BuildStatus>())
+    app.migrations.add(MPCodedDictionaryGeneration<NotificationDeliveryStatus>())
+    app.migrations.add(MPCodedDictionaryGeneration<UserRole>())
+    app.migrations.add(MPCodedDictionaryGeneration<TestFramework>())
+    app.migrations.add(MPCodedDictionaryGeneration<TestStatus>())
+    app.migrations.add(MPCodedDictionaryGeneration<TaskStatus>())
+
     // Запуск миграций автоматически при старте приложения
     try await app.autoMigrate()
-
-    // Создание словарей
-    try await BuildStatus.regenerate(on: app.db)
-    try await NotificationDeliveryStatus.regenerate(on: app.db)
-    try await UserRole.regenerate(on: app.db)
-    try await TaskStatus.regenerate(on: app.db)
-    try await TestFramework.regenerate(on: app.db)
-    try await TestStatus.regenerate(on: app.db)
 
     // register routes
     try routes(app)

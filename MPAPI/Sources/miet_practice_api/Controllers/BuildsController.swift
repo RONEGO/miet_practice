@@ -12,13 +12,8 @@ struct BuildsController: RouteCollection {
     /// Создает новую сборку с опциональными task_id и git_branch
     func run(req: Request) async throws -> RunBuildResponseDTO {
         let request = try req.content.decode(RunBuildRequestDTO.self)
-        
-        // Получаем ID статуса "RUNNING" из индекса enum (соответствует порядку в allCases)
-        guard let runningStatusIndex = BuildStatusEnum.allCases.firstIndex(of: .running) else {
-            throw Abort(.internalServerError, reason: "Build status 'RUNNING' not found in enum")
-        }
-        let runningStatusId = runningStatusIndex
-        
+        let runningStatusCode = BuildStatusEnum.running.code
+
         // Проверяем существование Task, если taskId передан
         if let taskId = request.taskId {
             guard try await Task.find(taskId, on: req.db) != nil else {
@@ -29,8 +24,7 @@ struct BuildsController: RouteCollection {
         // Создаем новую уникальную сборку
         let build = Build()
         build.id = UUID()
-        build.$status.id = runningStatusId
-        // Устанавливаем gitBranch (если не передан, используем пустую строку, так как поле required в БД)
+        build.$status.id = runningStatusCode
         build.gitBranch = request.gitBranch
 
         // Устанавливаем связь с Task, если taskId передан
@@ -52,8 +46,9 @@ struct BuildsController: RouteCollection {
     /// PATCH /v1/builds/complete
     /// Завершает сборку, устанавливая статус, время окончания и длительность
     func completeBuild(req: Request) async throws -> CompleteBuildResponseDTO {
+        let endTime = Date()
         let request = try req.content.decode(CompleteBuildRequestDTO.self)
-        
+
         // Находим сборку по ID
         guard let build = try await Build.find(request.buildId, on: req.db) else {
             throw Abort(.notFound, reason: "Build with id \(request.buildId) not found")
@@ -68,26 +63,16 @@ struct BuildsController: RouteCollection {
         }
         
         // Валидируем новый статус (должен быть SUCCESS или FAILURE)
-        guard let newStatus = BuildStatusEnum(rawValue: request.buildStatus),
-              newStatus == .success || newStatus == .failure else {
+        let newStatus = request.buildStatus
+        guard newStatus == .success || newStatus == .failure else {
             throw Abort(.badRequest, reason: "Invalid build_status. Must be 'SUCCESS' or 'FAILURE'")
         }
-        
-        // Получаем ID нового статуса из индекса enum
-        guard let newStatusIndex = BuildStatusEnum.allCases.firstIndex(of: newStatus) else {
-            throw Abort(.internalServerError, reason: "Build status '\(newStatus.rawValue)' not found in enum")
-        }
-        
-        // Вычисляем длительность (разница между started_at и текущим временем в миллисекундах)
-        let endTime = Date()
-        guard let startTime = build.startedAt else {
-            throw Abort(.internalServerError, reason: "Build started_at is missing")
-        }
 
+        let newStatusCode = newStatus.code
         // Обновляем сборку
         build.endedAt = endTime
-        build.$status.id = newStatusIndex
-        
+        build.$status.id = newStatusCode
+
         // Сохраняем изменения
         try await build.save(on: req.db)
         
