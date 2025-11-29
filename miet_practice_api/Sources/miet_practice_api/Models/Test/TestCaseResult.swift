@@ -25,3 +25,4 @@ final class TestCaseResult: Model, Content, @unchecked Sendable {
         self.$suite.id = suiteID
     }
 }
+

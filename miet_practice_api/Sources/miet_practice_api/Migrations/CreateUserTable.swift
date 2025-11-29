@@ -5,7 +5,12 @@ struct CreateUserTable: AsyncMigration {
         try await database.schema(DatabaseSchema.user.rawValue)
             .field("id", .uuid, .identifier(auto: false))
             .field("name", .string, .required)
-            .field("role_code", .uuid, .required, .references(DatabaseSchema.userRole.rawValue, "code"))
+            .field(
+                "role_code",
+                .int8,
+                .required,
+                .references(DatabaseSchema.userRole.rawValue, "code")
+            )
             .field("email", .string, .required)
             .field("created_at", .datetime, .required)
             .create()

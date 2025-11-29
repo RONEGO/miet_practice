@@ -5,7 +5,7 @@ enum DatabaseSchema: String {
     // Справочники
     case userRole = "user_role"
     case testFramework = "test_framework"
-    case testCaseResultStatus = "test_case_result_status"
+    case testResultStatus = "test_result_status"
     case taskStatus = "task_status"
     case notificationDeliveryStatus = "notification_delivery_status"
     case buildStatus = "build_status"

@@ -22,3 +22,4 @@ final class TestSuiteResult: Model, Content, @unchecked Sendable {
         self.$build.id = buildID
     }
 }
+

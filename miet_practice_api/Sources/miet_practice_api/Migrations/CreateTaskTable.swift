@@ -6,7 +6,12 @@ struct CreateTaskTable: AsyncMigration {
             .field("id", .uuid, .identifier(auto: false))
             .field("assignee_id", .uuid, .references(DatabaseSchema.user.rawValue, "id"))
             .field("qa_id", .uuid, .references(DatabaseSchema.user.rawValue, "id"))
-            .field("status_code", .uuid, .required, .references(DatabaseSchema.taskStatus.rawValue, "code"))
+            .field(
+                "status_code",
+                .int8,
+                .required,
+                .references(DatabaseSchema.taskStatus.rawValue, "code")
+            )
             .field("completed_at", .datetime)
             .field("created_at", .datetime, .required)
             .create()

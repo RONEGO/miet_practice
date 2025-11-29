@@ -29,3 +29,4 @@ final class User: Model, Content, @unchecked Sendable {
         self.$role.id = roleCode
     }
 }
+

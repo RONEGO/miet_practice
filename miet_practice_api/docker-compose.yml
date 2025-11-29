@@ -30,6 +30,7 @@ services:
     image: miet-practice-api:latest
     build:
       context: .
+      dockerfile: Dockerfile
     environment:
       <<: *shared_environment
     depends_on:

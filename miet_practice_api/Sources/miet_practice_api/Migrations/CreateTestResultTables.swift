@@ -4,7 +4,12 @@ struct CreateTestResultTables: AsyncMigration {
     func prepare(on database: any Database) async throws {
         try await database.schema(DatabaseSchema.testSuiteResult.rawValue)
             .field("id", .uuid, .identifier(auto: false))
-            .field("framework_code", .uuid, .required, .references(DatabaseSchema.testFramework.rawValue, "code"))
+            .field(
+                "framework_code",
+                .int8,
+                .required,
+                .references(DatabaseSchema.testFramework.rawValue, "code")
+            )
             .field("build_id", .uuid, .required, .references(DatabaseSchema.build.rawValue, "id", onDelete: .cascade))
             .create()
 
@@ -19,7 +24,12 @@ struct CreateTestResultTables: AsyncMigration {
             .field("id", .uuid, .identifier(auto: false))
             .field("case_id", .uuid, .required, .references(DatabaseSchema.testCaseResult.rawValue, "id", onDelete: .cascade))
             .field("name", .string, .required)
-            .field("status_code", .uuid, .required, .references(DatabaseSchema.testCaseResultStatus.rawValue, "code"))
+            .field(
+                "status_code",
+                .int8,
+                .required,
+                .references(DatabaseSchema.testResultStatus.rawValue, "code")
+            )
             .field("duration", .int64)
             .create()
     }

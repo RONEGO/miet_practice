@@ -7,7 +7,15 @@ struct CreateNotificationTable: AsyncMigration {
             .field("payload", .string, .required)
             .field("sent_at", .datetime, .required)
             .field("receiver_id", .uuid, .required, .references(DatabaseSchema.user.rawValue, "id"))
-            .field("delivery_status_code", .uuid, .required, .references(DatabaseSchema.notificationDeliveryStatus.rawValue, "code"))
+            .field(
+                "delivery_status_code",
+                .int8,
+                .required,
+                .references(
+                    DatabaseSchema.notificationDeliveryStatus.rawValue,
+                    "code"
+                )
+            )
             .create()
     }
 

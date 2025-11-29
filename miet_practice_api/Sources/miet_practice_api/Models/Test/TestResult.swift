@@ -15,17 +15,23 @@ final class TestResult: Model, Content, @unchecked Sendable {
     @Field(key: "name") var name: String
     
     /// Связь со статусом результата теста
-    @Parent(key: "status_code") var status: TestCaseResultStatus
+    @Parent(key: "status_code") var status: TestStatus
     
     /// Длительность выполнения теста в миллисекундах
     @OptionalField(key: "duration") var duration: Int64?
 
     init() { }
 
-    init(id: UUID? = nil, name: String, caseID: TestCaseResult.IDValue, statusCode: TestCaseResultStatus.IDValue) {
+    init(
+        id: UUID? = nil,
+        name: String,
+        caseID: TestCaseResult.IDValue,
+        statusCode: TestStatus.IDValue
+    ) {
         self.id = id
         self.name = name
         self.$testCase.id = caseID
         self.$status.id = statusCode
     }
 }
+
