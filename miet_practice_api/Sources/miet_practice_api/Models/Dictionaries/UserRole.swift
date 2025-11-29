@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-enum UserRoleEnum: String, Codable, Sendable, CaseIterable {
+enum UserRoleEnum: String, MPDictionaryEnum {
     /// Разработчик
     case developer = "DEVELOPER"
     /// Тестировщик
@@ -13,7 +13,7 @@ enum UserRoleEnum: String, Codable, Sendable, CaseIterable {
 }
 
 /// Справочник ролей
-final class UserRole: Model, Content, @unchecked Sendable {
+final class UserRole: MPDictionary, @unchecked Sendable {
     static let schema = DatabaseSchema.userRole.rawValue
 
     /// Код роли (первичный ключ)
@@ -24,8 +24,8 @@ final class UserRole: Model, Content, @unchecked Sendable {
 
     init() { }
 
-    init(id: Int? = nil, value: UserRoleEnum) {
-        self.id = id
+    init(code: Int? = nil, value: UserRoleEnum) {
+        self.id = code
         self.value = value
     }
 }

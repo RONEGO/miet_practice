@@ -6,7 +6,7 @@ struct CreateBuildTables: AsyncMigration {
             .field("id", .uuid, .identifier(auto: false))
             .field(
                 "status_code",
-                .int8,
+                .int,
                 .required,
                 .references(
                     DatabaseSchema.buildStatus.rawValue,
@@ -14,7 +14,7 @@ struct CreateBuildTables: AsyncMigration {
                 )
             )
             .field("task_id", .uuid, .references(DatabaseSchema.task.rawValue, "id"))
-            .field("git_branch", .string, .required)
+            .field("git_branch", .string)
             .field("started_at", .datetime, .required)
             .field("ended_at", .datetime)
             .field("duration", .int64)

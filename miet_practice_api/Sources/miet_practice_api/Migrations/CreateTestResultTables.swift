@@ -6,7 +6,7 @@ struct CreateTestResultTables: AsyncMigration {
             .field("id", .uuid, .identifier(auto: false))
             .field(
                 "framework_code",
-                .int8,
+                .int,
                 .required,
                 .references(DatabaseSchema.testFramework.rawValue, "code")
             )
@@ -26,7 +26,7 @@ struct CreateTestResultTables: AsyncMigration {
             .field("name", .string, .required)
             .field(
                 "status_code",
-                .int8,
+                .int,
                 .required,
                 .references(DatabaseSchema.testResultStatus.rawValue, "code")
             )

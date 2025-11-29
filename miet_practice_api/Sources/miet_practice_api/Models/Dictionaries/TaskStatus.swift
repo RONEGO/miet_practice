@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-enum TaskStatusEnum: String, Codable, Sendable, CaseIterable {
+enum TaskStatusEnum: String, MPDictionaryEnum {
     /// Новая задача
     case new = "NEW"
     /// В работе
@@ -17,7 +17,7 @@ enum TaskStatusEnum: String, Codable, Sendable, CaseIterable {
 }
 
 /// Справочник статусов задачи
-final class TaskStatus: Model, Content, @unchecked Sendable {
+final class TaskStatus: MPDictionary, @unchecked Sendable {
     static let schema = DatabaseSchema.taskStatus.rawValue
 
     /// Код статуса задачи (первичный ключ)
@@ -28,8 +28,8 @@ final class TaskStatus: Model, Content, @unchecked Sendable {
 
     init() { }
 
-    init(id: Int? = nil, value: TaskStatusEnum) {
-        self.id = id
+    init(code: Int? = nil, value: TaskStatusEnum) {
+        self.id = code
         self.value = value
     }
 }

@@ -25,55 +25,13 @@ public func configure(_ app: Application) async throws {
     try await app.autoMigrate()
 
     // Создание словарей
-    try await regenerateDictionaries(app.db)
+    try await BuildStatus.regenerate(on: app.db)
+    try await NotificationDeliveryStatus.regenerate(on: app.db)
+    try await UserRole.regenerate(on: app.db)
+    try await TaskStatus.regenerate(on: app.db)
+    try await TestFramework.regenerate(on: app.db)
+    try await TestStatus.regenerate(on: app.db)
 
     // register routes
     try routes(app)
-}
-
-private func regenerateDictionaries(_ db: any Database) async throws {
-    for status in UserRoleEnum.allCases.enumerated() {
-        let status = UserRole(
-            id: status.offset,
-            value: status.element
-        )
-        guard status._$idExists else { continue }
-        try await status.save(on: db)
-    }
-
-    for status in NotificationDeliveryStatusEnum.allCases.enumerated() {
-        let status = NotificationDeliveryStatus(
-            id: status.offset,
-            value: status.element
-        )
-        guard status._$idExists else { continue }
-        try await status.save(on: db)
-    }
-
-    for status in TaskStatusEnum.allCases.enumerated() {
-        let status = TaskStatus(
-            id: status.offset,
-            value: status.element
-        )
-        guard status._$idExists else { continue }
-        try await status.save(on: db)
-    }
-
-    for status in TestFrameworkEnum.allCases.enumerated() {
-        let status = TestFramework(
-            id: status.offset,
-            value: status.element
-        )
-        guard status._$idExists else { continue }
-        try await status.save(on: db)
-    }
-
-    for status in TestStatusEnum.allCases.enumerated() {
-        let status = TestStatus(
-            id: status.offset,
-            value: status.element
-        )
-        guard status._$idExists else { continue }
-        try await status.save(on: db)
-    }
 }

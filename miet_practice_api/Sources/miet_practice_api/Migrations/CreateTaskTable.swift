@@ -8,7 +8,7 @@ struct CreateTaskTable: AsyncMigration {
             .field("qa_id", .uuid, .references(DatabaseSchema.user.rawValue, "id"))
             .field(
                 "status_code",
-                .int8,
+                .int,
                 .required,
                 .references(DatabaseSchema.taskStatus.rawValue, "code")
             )

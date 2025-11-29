@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-enum NotificationDeliveryStatusEnum: String, Codable, Sendable, CaseIterable {
+enum NotificationDeliveryStatusEnum: String, MPDictionaryEnum {
     /// Отправлено
     case sent = "SENT"
     /// Прочитано
@@ -11,7 +11,7 @@ enum NotificationDeliveryStatusEnum: String, Codable, Sendable, CaseIterable {
 }
 
 /// Справочник статусов доставки уведомлений
-final class NotificationDeliveryStatus: Model, Content, @unchecked Sendable {
+final class NotificationDeliveryStatus: MPDictionary, @unchecked Sendable {
     static let schema = DatabaseSchema.notificationDeliveryStatus.rawValue
 
     /// Код статуса доставки (первичный ключ)
@@ -22,8 +22,8 @@ final class NotificationDeliveryStatus: Model, Content, @unchecked Sendable {
 
     init() { }
 
-    init(id: Int? = nil, value: NotificationDeliveryStatusEnum) {
-        self.id = id
+    init(code: Int? = nil, value: NotificationDeliveryStatusEnum) {
+        self.id = code
         self.value = value
     }
 }

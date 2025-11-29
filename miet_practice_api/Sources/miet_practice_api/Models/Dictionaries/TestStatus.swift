@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-enum TestStatusEnum: String, Codable, Sendable, CaseIterable {
+enum TestStatusEnum: String, MPDictionaryEnum {
     /// Тест пройден
     case success = "SUCCESS"
     /// Тест провален
@@ -13,7 +13,7 @@ enum TestStatusEnum: String, Codable, Sendable, CaseIterable {
 }
 
 /// Справочник результатов теста
-final class TestStatus: Model, Content, @unchecked Sendable {
+final class TestStatus: MPDictionary, @unchecked Sendable {
     static let schema = DatabaseSchema.testResultStatus.rawValue
 
     /// Код статуса результата теста (первичный ключ)
@@ -24,8 +24,8 @@ final class TestStatus: Model, Content, @unchecked Sendable {
 
     init() { }
 
-    init(id: Int? = nil, value: TestStatusEnum) {
-        self.id = id
+    init(code: Int? = nil, value: TestStatusEnum) {
+        self.id = code
         self.value = value
     }
 }

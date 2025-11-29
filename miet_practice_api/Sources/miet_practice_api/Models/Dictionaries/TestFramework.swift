@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-enum TestFrameworkEnum: String, Codable, Sendable, CaseIterable {
+enum TestFrameworkEnum: String, MPDictionaryEnum {
     /// Xcode UI тесты
     case xcodeUI = "XCODE_UI"
     /// Xcode Unit тесты
@@ -11,7 +11,7 @@ enum TestFrameworkEnum: String, Codable, Sendable, CaseIterable {
 }
 
 /// Справочник библиотек тестов
-final class TestFramework: Model, Content, @unchecked Sendable {
+final class TestFramework: MPDictionary, @unchecked Sendable {
     static let schema = DatabaseSchema.testFramework.rawValue
 
     /// Код фреймворка тестирования (первичный ключ)
@@ -22,8 +22,8 @@ final class TestFramework: Model, Content, @unchecked Sendable {
 
     init() { }
 
-    init(id: Int? = nil, value: TestFrameworkEnum) {
-        self.id = id
+    init(code: Int? = nil, value: TestFrameworkEnum) {
+        self.id = code
         self.value = value
     }
 }
