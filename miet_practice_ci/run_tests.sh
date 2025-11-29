@@ -4,11 +4,11 @@ source "$(dirname "$0")/Helpers/logging.sh"
 
 # Глобальная переменная для пути к кешу результатов unit-тестов
 CACHE_DIR="./Cache"
-PROJECT_PATH="../miet_practice_application/miet_practice_application.xcodeproj"
+PROJECT_PATH="../MPTestableApp/MPTestableApp.xcodeproj"
 
 TESTS=(
-    "miet-practice-application_unit_tests"  "$CACHE_DIR/UnitTestsBuild.log" "$CACHE_DIR/UnitTestsResults.xcresult"
-    "miet-practice-application_ui_tests"    "$CACHE_DIR/UITestsBuild.log"   "$CACHE_DIR/UITestsResults.xcresult"
+    "MPTestableAppUnitTests"  "$CACHE_DIR/UnitTestsBuild.log" "$CACHE_DIR/UnitTestsResults.xcresult"
+    "MPTestableAppUITests"    "$CACHE_DIR/UITestsBuild.log"   "$CACHE_DIR/UITestsResults.xcresult"
 )
 
 # Создаём директорию Cache, если её нет

@@ -83,11 +83,9 @@ struct BuildsController: RouteCollection {
         guard let startTime = build.startedAt else {
             throw Abort(.internalServerError, reason: "Build started_at is missing")
         }
-        let duration = Int64(endTime.timeIntervalSince(startTime) * 1000) // в миллисекундах
-        
+
         // Обновляем сборку
         build.endedAt = endTime
-        build.duration = duration
         build.$status.id = newStatusIndex
         
         // Сохраняем изменения
