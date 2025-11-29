@@ -64,7 +64,9 @@ log "Устройство: $DESTINATION\n"
         -scheme "$SCHEME" \
         -destination "$DESTINATION" \
         -resultBundlePath "$RESULT_PATH" \
-        > "$BUILD_LOG_PATH" 2>&1
+        2>&1 | while IFS= read -r line; do
+            echo "$line" >> "$BUILD_LOG_PATH"
+        done
 ) &
 BUILD_PID=$!
 

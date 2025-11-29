@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-enum TestStatusEnum: String, MPCodedDictionaryEnum {
+enum TestStatusEnum: String, LookUpTableEnum {
     /// Тест пройден
     case success = "SUCCESS"
     /// Тест провален
@@ -13,18 +13,18 @@ enum TestStatusEnum: String, MPCodedDictionaryEnum {
 }
 
 /// Справочник результатов теста
-final class TestStatus: MPCodedDictionary, @unchecked Sendable {
+final class TestStatus: LookUpTable, @unchecked Sendable {
     static let schema = DatabaseSchema.testResultStatus.rawValue
 
     /// Код статуса результата теста (первичный ключ)
-    @ID(custom: "code", generatedBy: .none) var id: Int?
+    @ID(custom: "code", generatedBy: .none) var id: UInt8?
 
     /// Значение статуса
     @Field(key: "value") var value: TestStatusEnum
 
     init() { }
 
-    init(id: Int?, value: TestStatusEnum) {
+    init(id: UInt8?, value: TestStatusEnum) {
         self.id = id
         self.value = value
     }

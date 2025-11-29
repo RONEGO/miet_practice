@@ -1,7 +1,13 @@
 import Fluent
+import MPCore
 
-struct MPCodedDictionaryGeneration<_Dictionary: MPCodedDictionary>: AsyncMigration {
-    private typealias Enum = _Dictionary._DictionaryEnum
+private enum MPCodedDictionaryGenerationError: Error {
+    /// Код уже существует для заполнения
+    case codeAlreadyExisted
+}
+
+struct MPCodedDictionaryGeneration<_Dictionary: LookUpTable>: AsyncMigration {
+    private typealias Enum = _Dictionary._Enum
 
     var name: String {
         "MPCodedDictionaryGeneration_\(String(describing: _Dictionary.self))_" +
@@ -10,10 +16,13 @@ struct MPCodedDictionaryGeneration<_Dictionary: MPCodedDictionary>: AsyncMigrati
 
     func prepare(on database: any Database) async throws {
         for value in Enum.allCases {
-            guard
-                try await _Dictionary.find(value.code, on: database) == nil
-            else { continue }
-            let model = _Dictionary(id: value.code, value: value)
+            let code = try _Dictionary.getCode(value)
+            if let oldValue = try await _Dictionary.find(code, on: database) {
+                guard oldValue.value == value else { throw MPCodedDictionaryGenerationError.codeAlreadyExisted }
+                continue
+            }
+            guard try await _Dictionary.find(code, on: database).isNil else { continue }
+            let model = _Dictionary(id: code, value: value)
             try await model.save(on: database)
         }
     }

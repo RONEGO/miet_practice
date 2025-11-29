@@ -45,7 +45,5 @@ for ((i=0; i < ${#TESTS[@]}; i+=3)); do
     echo ""
 done
 
-
 tput cnorm 2>/dev/null || true
-rm $REPORTER_PATH
 log_warn "Все прогоны завершены!"

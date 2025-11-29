@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-enum UserRoleEnum: String, MPCodedDictionaryEnum {
+enum UserRoleEnum: String, LookUpTableEnum {
     /// Разработчик
     case developer = "DEVELOPER"
     /// Тестировщик
@@ -13,18 +13,18 @@ enum UserRoleEnum: String, MPCodedDictionaryEnum {
 }
 
 /// Справочник ролей
-final class UserRole: MPCodedDictionary, @unchecked Sendable {
+final class UserRole: LookUpTable, @unchecked Sendable {
     static let schema = DatabaseSchema.userRole.rawValue
 
     /// Код роли (первичный ключ)
-    @ID(custom: "code", generatedBy: .none) var id: Int?
+    @ID(custom: "code", generatedBy: .none) var id: UInt8?
 
     /// Значение роли
     @Field(key: "value") var value: UserRoleEnum
 
     init() { }
 
-    init(id: Int?, value: UserRoleEnum) {
+    init(id: UInt8?, value: UserRoleEnum) {
         self.id = id
         self.value = value
     }

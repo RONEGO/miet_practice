@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-enum TaskStatusEnum: String, MPCodedDictionaryEnum {
+enum TaskStatusEnum: String, LookUpTableEnum {
     /// Новая задача
     case new = "NEW"
     /// В работе
@@ -17,18 +17,18 @@ enum TaskStatusEnum: String, MPCodedDictionaryEnum {
 }
 
 /// Справочник статусов задачи
-final class TaskStatus: MPCodedDictionary, @unchecked Sendable {
+final class TaskStatus: LookUpTable, @unchecked Sendable {
     static let schema = DatabaseSchema.taskStatus.rawValue
 
     /// Код статуса задачи (первичный ключ)
-    @ID(custom: "code", generatedBy: .none) var id: Int?
+    @ID(custom: "code", generatedBy: .none) var id: UInt8?
 
     /// Значение статуса
     @Field(key: "value") var value: TaskStatusEnum
 
     init() { }
 
-    init(id: Int?, value: TaskStatusEnum) {
+    init(id: UInt8?, value: TaskStatusEnum) {
         self.id = id
         self.value = value
     }

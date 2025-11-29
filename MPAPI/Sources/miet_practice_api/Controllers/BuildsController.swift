@@ -1,5 +1,6 @@
 import Fluent
 import Vapor
+import MPDTO
 
 struct BuildsController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
@@ -12,7 +13,7 @@ struct BuildsController: RouteCollection {
     /// Создает новую сборку с опциональными task_id и git_branch
     func run(req: Request) async throws -> RunBuildResponseDTO {
         let request = try req.content.decode(RunBuildRequestDTO.self)
-        let runningStatusCode = BuildStatusEnum.running.code
+        let runningStatusCode = try BuildStatus.getCode(.running)
 
         // Проверяем существование Task, если taskId передан
         if let taskId = request.taskId {
@@ -63,23 +64,23 @@ struct BuildsController: RouteCollection {
         }
         
         // Валидируем новый статус (должен быть SUCCESS или FAILURE)
-        let newStatus = request.buildStatus
-        guard newStatus == .success || newStatus == .failure else {
+        guard let newStatus = BuildStatusEnum(rawValue: request.buildStatus),
+              newStatus == .success || newStatus == .failure else {
             throw Abort(.badRequest, reason: "Invalid build_status. Must be 'SUCCESS' or 'FAILURE'")
         }
 
-        let newStatusCode = newStatus.code
+        let newStatusCode = try BuildStatus.getCode(newStatus)
         // Обновляем сборку
         build.endedAt = endTime
         build.$status.id = newStatusCode
 
         // Сохраняем изменения
         try await build.save(on: req.db)
-        
+
         guard let buildId = build.id else {
             throw Abort(.internalServerError, reason: "Build ID is missing")
         }
-        
+
         return CompleteBuildResponseDTO(
             buildId: buildId,
             message: "Build completed with status: \(newStatus.rawValue)"

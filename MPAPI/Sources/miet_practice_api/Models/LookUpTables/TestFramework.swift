@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-enum TestFrameworkEnum: String, MPCodedDictionaryEnum {
+enum TestFrameworkEnum: String, LookUpTableEnum {
     /// Xcode UI тесты
     case xcodeUI = "XCODE_UI"
     /// Xcode Unit тесты
@@ -11,18 +11,18 @@ enum TestFrameworkEnum: String, MPCodedDictionaryEnum {
 }
 
 /// Справочник библиотек тестов
-final class TestFramework: MPCodedDictionary, @unchecked Sendable {
+final class TestFramework: LookUpTable, @unchecked Sendable {
     static let schema = DatabaseSchema.testFramework.rawValue
 
     /// Код фреймворка тестирования (первичный ключ)
-    @ID(custom: "code", generatedBy: .none) var id: Int?
+    @ID(custom: "code", generatedBy: .none) var id: UInt8?
 
     /// Значение фреймворка
     @Field(key: "value") var value: TestFrameworkEnum
 
     init() { }
 
-    init(id: Int?, value: TestFrameworkEnum) {
+    init(id: UInt8?, value: TestFrameworkEnum) {
         self.id = id
         self.value = value
     }
