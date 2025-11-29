@@ -6,6 +6,14 @@ source "$(dirname "$0")/Helpers/logging.sh"
 CACHE_DIR="./Cache"
 PROJECT_PATH="../MPTestableApp/MPTestableApp.xcodeproj"
 
+# Проверяем наличие run_reporter и создаём его при необходимости
+REPORTER_PATH="./run_reporter"
+if [ ! -f "$REPORTER_PATH" ]; then
+    log_info "Файл run_reporter не найден, создаём..."
+    "$(dirname "$0")/Factory/make_run_reporter.sh"
+    log_success "run_reporter создан"
+fi
+
 TESTS=(
     "MPTestableAppUnitTests"  "$CACHE_DIR/UnitTestsBuild.log" "$CACHE_DIR/UnitTestsResults.xcresult"
     "MPTestableAppUITests"    "$CACHE_DIR/UITestsBuild.log"   "$CACHE_DIR/UITestsResults.xcresult"
@@ -32,10 +40,12 @@ for ((i=0; i < ${#TESTS[@]}; i+=3)); do
     log ""
     wait "$pid"
 
-    ./xcresult-reporter "$(cd "$RESULT_PATH" && pwd)"
+    $REPORTER_PATH "$(cd "$RESULT_PATH" && pwd)"
 
     echo ""
 done
 
+
 tput cnorm 2>/dev/null || true
+rm $REPORTER_PATH
 log_warn "Все прогоны завершены!"
