@@ -48,7 +48,8 @@ fi
 log ""
 # Запускаем все тесты
 TESTS_FAILED=false
-run_all_tests "$BASE_URL" TESTS_FAILED
+REPORTER_CACHE_FILE="$CACHE_DIR/run_reporter_cache.json"
+run_all_tests "$BASE_URL" TESTS_FAILED "$REPORTER_CACHE_FILE"
 
 tput cnorm 2>/dev/null || true
 

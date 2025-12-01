@@ -36,6 +36,7 @@ run_single_test() {
 run_all_tests() {
     local base_url="$1"
     local tests_failed_ref="$2"  # Имя переменной для возврата результата
+    local cache_file="$3"  # Путь к файлу кеша reporter
     
     local tests_failed=false
     
@@ -55,6 +56,9 @@ run_all_tests() {
         if [ -n "$base_url" ]; then
             local parsing_file_path="$CACHE_DIR/${scheme}Parsing.json"
             parse_test_results "$result_path" "$parsing_file_path" "$PARSER_PATH"
+            
+            # Отправляем результаты теста сразу после парсинга
+            send_submit_single_test_result "$base_url" "$cache_file" "$parsing_file_path"
         fi
         
         echo ""

@@ -22,6 +22,30 @@ send_run_request() {
     }
 }
 
+# Отправка запроса на отправку результатов одного теста
+send_submit_single_test_result() {
+    local base_url="$1"
+    local cache_file="$2"
+    local parsing_file_path="$3"
+    
+    local absolute_path
+    absolute_path=$(get_absolute_path "$cache_file")
+    
+    if [ ! -f "$parsing_file_path" ]; then
+        log_warn "Файл с результатами теста не найден: $parsing_file_path"
+        return 1
+    fi
+    
+    local parsing_absolute_path
+    parsing_absolute_path=$(get_absolute_path "$parsing_file_path")
+    
+    log_info "Отправляем результаты теста..."
+    "$REPORTER_PATH" "$base_url" "$absolute_path" --submit-tests --test-results-files "$parsing_absolute_path" || {
+        log_warn "Не удалось отправить результаты теста"
+        return 1
+    }
+}
+
 # Отправка запроса на завершение сборки
 send_complete_request() {
     local base_url="$1"

@@ -24,6 +24,9 @@ struct MPResultReporter: AsyncParsableCommand {
     
     @Flag(name: .customLong("complete"), help: "Flag to complete build")
     var complete: Bool = false
+    
+    @Flag(name: .customLong("submit-tests"), help: "Flag to submit test results")
+    var submitTests: Bool = false
 
     // Опции для --run
     @Option(name: .customLong("task-id"), help: "Task ID (optional, only for --run)")
@@ -32,9 +35,11 @@ struct MPResultReporter: AsyncParsableCommand {
     @Option(name: .customLong("git-branch"), help: "Git branch (optional, only for --run)")
     var gitBranch: String?
 
-
     @Option(name: .customLong("build-status"), help: "Build status (optional, only for --complete)")
     var buildStatus: String?
+    
+    @Option(name: .customLong("test-results-files"), help: "Comma-separated paths to test results JSON files (required for --submit-tests)")
+    var testResultsFiles: String?
 
     func run() async throws {
         guard let url = URL(string: baseURL) else {
@@ -50,8 +55,10 @@ struct MPResultReporter: AsyncParsableCommand {
             )
         } else if complete {
             try await sendCompleteRequest(perfomer)
+        } else if submitTests {
+            try await sendSubmitTestResultsRequest(perfomer)
         } else {
-            throw NSError(domain: "Either --run or --complete flag is required", code: -1)
+            throw NSError(domain: "Either --run, --complete, or --submit-tests flag is required", code: -1)
         }
     }
     
@@ -99,6 +106,42 @@ struct MPResultReporter: AsyncParsableCommand {
         )
         
         print("Build completed: \(result.message)")
+    }
+    
+    private func sendSubmitTestResultsRequest(
+        _ perfomer: IRequestPerformer
+    ) async throws {
+        guard let testResultsFilesString = testResultsFiles else {
+            throw NSError(domain: "--test-results-files is required for --submit-tests", code: -1)
+        }
+        
+        // Получаем build_id из кеша
+        let cache: MPResultReporterCache = try upload(from: cacheFilePath)
+        guard
+            let buildIDString = cache.buildID,
+            let buildID = UUID(uuidString: buildIDString)
+        else {
+            throw NSError(domain: "Build ID not found in cache or invalid", code: -1)
+        }
+        
+        // Разбиваем строку с путями на массив
+        let filePaths = testResultsFilesString.split(separator: ",").map { String($0).trimmingCharacters(in: .whitespaces) }
+        
+        // Читаем результаты тестов из всех файлов
+        var testSuites: [TestSuiteDTO] = []
+        for filePath in filePaths {
+            let testSuite: TestSuiteDTO = try upload(from: filePath)
+            testSuites.append(testSuite)
+        }
+        
+        let result = try await perfomer.perform(
+            SubmitTestResultsEndpoint(
+                buildId: buildID,
+                testSuites: testSuites
+            )
+        )
+        
+        print("Test results submitted: \(result.message)")
     }
 }
 

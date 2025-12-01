@@ -8,7 +8,7 @@ struct TestsController: RouteCollection {
         tests.post("submit", use: update)
     }
     
-    /// POST /v1/tests/update
+    /// POST /v1/tests/submit
     /// Обновляет или создает результаты тестов для сборки
     func update(req: Request) async throws -> SubmitTestResultsResponseDTO {
         let request = try req.content.decode(SubmitTestResultsRequestDTO.self)
