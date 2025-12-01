@@ -33,9 +33,16 @@ struct CreateTestResultTables: AsyncMigration {
             )
             .field("duration", .int64)
             .create()
+
+        try await database.schema(DatabaseSchema.testSuiteResultArtefact.rawValue)
+            .field("id", .uuid, .identifier(auto: false))
+            .field("test_suite_result_id", .uuid, .required, .references(DatabaseSchema.testSuiteResult.rawValue, "id", onDelete: .cascade))
+            .field("logs_url", .string)
+            .create()
     }
 
     func revert(on database: any Database) async throws {
+        try await database.schema(DatabaseSchema.testSuiteResultArtefact.rawValue).delete()
         try await database.schema(DatabaseSchema.testResult.rawValue).delete()
         try await database.schema(DatabaseSchema.testCaseResult.rawValue).delete()
         try await database.schema(DatabaseSchema.testSuiteResult.rawValue).delete()

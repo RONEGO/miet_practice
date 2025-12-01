@@ -18,16 +18,9 @@ struct CreateBuildTables: AsyncMigration {
             .field("started_at", .datetime, .required)
             .field("ended_at", .datetime)
             .create()
-
-        try await database.schema(DatabaseSchema.buildArtefact.rawValue)
-            .field("id", .uuid, .identifier(auto: false))
-            .field("build_id", .uuid, .required, .references(DatabaseSchema.build.rawValue, "id", onDelete: .cascade))
-            .field("logs_url", .string)
-            .create()
     }
 
     func revert(on database: any Database) async throws {
-        try await database.schema(DatabaseSchema.buildArtefact.rawValue).delete()
         try await database.schema(DatabaseSchema.build.rawValue).delete()
     }
 }
