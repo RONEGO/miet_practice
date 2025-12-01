@@ -4,18 +4,18 @@ import Vapor
 public struct SubmitTestResultsRequestDTO: Content {
     public enum CodingKeys: String, CodingKey {
         case buildId = "build_id"
-        case testSuites = "test_suites"
+        case testSuite = "test_suite"
     }
     
     /// ID сборки
     public var buildId: UUID
     
-    /// Массив наборов тестов
-    public var testSuites: [TestSuiteDTO]
+    /// Набор тестов
+    public var testSuite: TestSuiteDTO
     
-    public init(buildId: UUID, testSuites: [TestSuiteDTO]) {
+    public init(buildId: UUID, testSuite: TestSuiteDTO) {
         self.buildId = buildId
-        self.testSuites = testSuites
+        self.testSuite = testSuite
     }
 }
 

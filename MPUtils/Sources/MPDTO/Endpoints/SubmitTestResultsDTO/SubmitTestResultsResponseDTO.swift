@@ -5,7 +5,7 @@ public struct SubmitTestResultsResponseDTO: Content {
     public enum CodingKeys: String, CodingKey {
         case buildId = "build_id"
         case message
-        case testSuitesCount = "test_suites_count"
+        case testSuiteId = "test_suite_id"
     }
     
     /// ID сборки
@@ -14,13 +14,13 @@ public struct SubmitTestResultsResponseDTO: Content {
     /// Сообщение о результате
     public var message: String
     
-    /// Количество обработанных наборов тестов
-    public var testSuitesCount: Int
+    /// ID обработанного набора тестов
+    public var testSuiteId: UUID
     
-    public init(buildId: UUID, message: String, testSuitesCount: Int) {
+    public init(buildId: UUID, message: String, testSuiteId: UUID) {
         self.buildId = buildId
         self.message = message
-        self.testSuitesCount = testSuitesCount
+        self.testSuiteId = testSuiteId
     }
 }
 

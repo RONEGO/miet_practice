@@ -13,18 +13,18 @@ struct SubmitTestResultsEndpoint: Endpoint {
     typealias Response = SubmitTestResultsResponseDTO
 
     let buildId: UUID
-    let testSuites: [TestSuiteDTO]
+    let testSuite: TestSuiteDTO
 
     /// Запрос
     var request: SubmitTestResultsRequestDTO {
         SubmitTestResultsRequestDTO(
             buildId: buildId,
-            testSuites: testSuites
+            testSuite: testSuite
         )
     }
 
     /// Путь
-    var path: String { "/v1/tests/submit" }
+    var path: String { "/v1/test-suite/submit" }
 
     /// HTTP метод
     var httpMethod: HTTPMethod { .post }

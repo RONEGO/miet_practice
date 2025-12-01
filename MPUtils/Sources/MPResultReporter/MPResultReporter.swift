@@ -38,8 +38,8 @@ struct MPResultReporter: AsyncParsableCommand {
     @Option(name: .customLong("build-status"), help: "Build status (optional, only for --complete)")
     var buildStatus: String?
     
-    @Option(name: .customLong("test-results-files"), help: "Comma-separated paths to test results JSON files (required for --submit-tests)")
-    var testResultsFiles: String?
+    @Option(name: .customLong("test-results-file"), help: "Path to test results JSON file (required for --submit-tests)")
+    var testResultsFile: String?
 
     func run() async throws {
         guard let url = URL(string: baseURL) else {
@@ -111,8 +111,8 @@ struct MPResultReporter: AsyncParsableCommand {
     private func sendSubmitTestResultsRequest(
         _ perfomer: IRequestPerformer
     ) async throws {
-        guard let testResultsFilesString = testResultsFiles else {
-            throw NSError(domain: "--test-results-files is required for --submit-tests", code: -1)
+        guard let testResultsFilePath = testResultsFile else {
+            throw NSError(domain: "--test-results-file is required for --submit-tests", code: -1)
         }
         
         // Получаем build_id из кеша
@@ -124,24 +124,23 @@ struct MPResultReporter: AsyncParsableCommand {
             throw NSError(domain: "Build ID not found in cache or invalid", code: -1)
         }
         
-        // Разбиваем строку с путями на массив
-        let filePaths = testResultsFilesString.split(separator: ",").map { String($0).trimmingCharacters(in: .whitespaces) }
+        // Загружаем test suite из файла
+        let testSuite: TestSuiteDTO = try upload(from: testResultsFilePath)
         
-        // Читаем результаты тестов из всех файлов
-        var testSuites: [TestSuiteDTO] = []
-        for filePath in filePaths {
-            let testSuite: TestSuiteDTO = try upload(from: filePath)
-            testSuites.append(testSuite)
-        }
-        
+        // Отправляем test suite
         let result = try await perfomer.perform(
             SubmitTestResultsEndpoint(
                 buildId: buildID,
-                testSuites: testSuites
+                testSuite: testSuite
             )
         )
         
-        print("Test results submitted: \(result.message)")
+        // Сохраняем отправленный test suite ID в кеш
+        var updatedCache = cache
+        updatedCache.sentTestSuiteID = result.testSuiteId.uuidString
+        try save(updatedCache, to: cacheFilePath)
+        
+        print("Test suite '\(testSuite.name)' submitted: \(result.message) (test_suite_id: \(result.testSuiteId))")
     }
 }
 

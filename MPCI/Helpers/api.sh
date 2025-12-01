@@ -40,7 +40,7 @@ send_submit_single_test_result() {
     parsing_absolute_path=$(get_absolute_path "$parsing_file_path")
     
     log_info "Отправляем результаты теста..."
-    "$REPORTER_PATH" "$base_url" "$absolute_path" --submit-tests --test-results-files "$parsing_absolute_path" || {
+    "$REPORTER_PATH" "$base_url" "$absolute_path" --submit-tests --test-results-file "$parsing_absolute_path" || {
         log_warn "Не удалось отправить результаты теста"
         return 1
     }
