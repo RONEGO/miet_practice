@@ -5,6 +5,9 @@ import Vapor
 
 // configures your application
 public func configure(_ app: Application) async throws {
+    // Увеличиваем лимит размера тела запроса для загрузки файлов (100MB)
+    app.routes.defaultMaxBodySize = ByteCount(value: 10 * 1024 * 1024)
+
     app.databases.use(DatabaseConfigurationFactory.postgres(configuration: .init(
         hostname: Environment.get("DATABASE_HOST") ?? "localhost",
         port: Environment.get("DATABASE_PORT").flatMap(Int.init(_:)) ?? SQLPostgresConfiguration.ianaPortNumber,
@@ -21,6 +24,9 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(CreateBuildTables())
     app.migrations.add(CreateTestResultTables())
     app.migrations.add(CreateNotificationTable())
+    
+    /// Создание директорий для загрузки файлов
+    app.migrations.add(CreateUploadDirectories())
 
     /// Наполнение словарей
     app.migrations.add(MPCodedDictionaryGeneration<BuildStatus>())

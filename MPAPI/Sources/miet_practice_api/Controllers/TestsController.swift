@@ -6,6 +6,8 @@ struct TestsController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
         let testSuite = routes.grouped("v1", "test-suite")
         testSuite.post("submit", use: update)
+        testSuite.post(":test_suite_result_id", "log", use: uploadLog)
+        testSuite.get(":test_suite_result_id", "log", use: getLog)
     }
     
     /// POST /v1/test-suite/submit
@@ -104,6 +106,136 @@ struct TestsController: RouteCollection {
             buildId: request.buildId,
             message: "Test results updated successfully",
             testSuiteId: suiteId
+        )
+    }
+    
+    /// POST /v1/test-suite/{test_suite_result_id}/log
+    /// Загружает файлы логов для набора тестов
+    func uploadLog(req: Request) async throws -> UploadLogResponseDTO {
+        // Получаем test_suite_result_id из параметров маршрута
+        guard let testSuiteResultIdString = req.parameters.get("test_suite_result_id"),
+              let testSuiteResultId = UUID(uuidString: testSuiteResultIdString) else {
+            throw Abort(.badRequest, reason: "Invalid test_suite_result_id")
+        }
+        
+        // Проверяем существование TestSuiteResult
+        guard try await TestSuiteResult.find(testSuiteResultId, on: req.db) != nil else {
+            throw Abort(.notFound, reason: "Test suite result with id \(testSuiteResultId) not found")
+        }
+        
+        // Декодируем запрос с файлом
+        let request = try req.content.decode(UploadLogRequestDTO.self)
+        
+        // Создаем или находим артефакт
+        let existingArtefact = try await TestSuiteResultArtefact.query(on: req.db)
+            .filter(\.$testSuiteResult.$id == testSuiteResultId)
+            .first()
+        
+        let artefact: TestSuiteResultArtefact
+        let artefactId: UUID
+        
+        if let existing = existingArtefact {
+            // Используем существующий артефакт
+            artefact = existing
+            guard let id = existing.id else {
+                throw Abort(.internalServerError, reason: "Artefact ID is missing")
+            }
+            artefactId = id
+        } else {
+            // Создаем новый артефакт
+            let newId = UUID()
+            artefact = TestSuiteResultArtefact(
+                id: newId,
+                testSuiteResultID: testSuiteResultId,
+                logsUrl: nil
+            )
+            try await artefact.save(on: req.db)
+            artefactId = newId
+        }
+        
+        // Создаем директорию для логов, если её нет
+        let workingDirectory = req.application.directory.workingDirectory
+        let uploadsDirectory = UploadPaths.testSuitesResultArtefactsPathWithSlash(
+            workingDirectory: workingDirectory
+        )
+
+        let fileManager = FileManager.default
+        guard fileManager.fileExists(atPath: uploadsDirectory) else {
+            throw Abort(.internalServerError, reason: "Upload directory is missing")
+        }
+        
+        // Сохраняем файл с именем {artefact_id}.log
+        let fileName = UploadPaths.logFileName(artefactId: artefactId)
+        let filePath = uploadsDirectory + fileName
+        
+        // Сохраняем файл
+        let data = Data(buffer: request.log.data)
+        try data.write(to: URL(fileURLWithPath: filePath))
+        
+        // Обновляем URL логов в артефакте
+        let logsUrl = UploadPaths.logFileRelativePath(artefactId: artefactId)
+        artefact.logsUrl = logsUrl
+        try await artefact.save(on: req.db)
+        
+        return UploadLogResponseDTO(
+            testSuiteResultId: testSuiteResultId,
+            artefactId: artefactId,
+            message: "Log file uploaded successfully",
+            logsUrl: logsUrl
+        )
+    }
+    
+    /// GET /v1/test-suite/{test_suite_result_id}/log
+    /// Получает файл лога для набора тестов
+    func getLog(req: Request) async throws -> Response {
+        // Получаем test_suite_result_id из параметров маршрута
+        guard let testSuiteResultIdString = req.parameters.get("test_suite_result_id"),
+              let testSuiteResultId = UUID(uuidString: testSuiteResultIdString) else {
+            throw Abort(.badRequest, reason: "Invalid test_suite_result_id")
+        }
+        
+        // Проверяем существование TestSuiteResult
+        guard try await TestSuiteResult.find(testSuiteResultId, on: req.db) != nil else {
+            throw Abort(.notFound, reason: "Test suite result with id \(testSuiteResultId) not found")
+        }
+        
+        // Находим артефакт
+        guard let artefact = try await TestSuiteResultArtefact.query(on: req.db)
+            .filter(\.$testSuiteResult.$id == testSuiteResultId)
+            .first() else {
+            throw Abort(.notFound, reason: "Log file not found for test suite result with id \(testSuiteResultId)")
+        }
+        
+        // Проверяем наличие logsUrl
+        guard let logsUrl = artefact.logsUrl, !logsUrl.isEmpty else {
+            throw Abort(.notFound, reason: "Log file URL is not set for test suite result with id \(testSuiteResultId)")
+        }
+        
+        // Формируем полный путь к файлу
+        let workingDirectory = req.application.directory.workingDirectory
+        let filePath = "\(workingDirectory)/\(logsUrl)"
+        
+        // Проверяем существование файла
+        let fileManager = FileManager.default
+        guard fileManager.fileExists(atPath: filePath) else {
+            throw Abort(.notFound, reason: "Log file not found at path: \(logsUrl)")
+        }
+        
+        // Читаем файл
+        let fileData = try Data(contentsOf: URL(fileURLWithPath: filePath))
+        
+        // Создаем ответ с файлом
+        var headers = HTTPHeaders()
+        headers.contentType = .plainText
+        headers.add(
+            name: .contentDisposition,
+            value: "attachment; filename=\"\(artefact.id?.uuidString ?? "log").log\""
+        )
+
+        return Response(
+            status: .ok,
+            headers: headers,
+            body: Response.Body(data: fileData)
         )
     }
 }
