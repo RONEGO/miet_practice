@@ -6,7 +6,7 @@ struct CreateBuildTables: AsyncMigration {
             .field("id", .uuid, .identifier(auto: false))
             .field(
                 "status_code",
-                .int,
+                .int8,
                 .required,
                 .references(
                     DatabaseSchema.buildStatus.rawValue,
@@ -17,7 +17,6 @@ struct CreateBuildTables: AsyncMigration {
             .field("git_branch", .string)
             .field("started_at", .datetime, .required)
             .field("ended_at", .datetime)
-            .field("duration", .int64)
             .create()
 
         try await database.schema(DatabaseSchema.buildArtefact.rawValue)

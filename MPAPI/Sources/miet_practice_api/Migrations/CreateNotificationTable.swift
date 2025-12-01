@@ -9,7 +9,7 @@ struct CreateNotificationTable: AsyncMigration {
             .field("receiver_id", .uuid, .required, .references(DatabaseSchema.user.rawValue, "id"))
             .field(
                 "delivery_status_code",
-                .int,
+                .int8,
                 .required,
                 .references(
                     DatabaseSchema.notificationDeliveryStatus.rawValue,

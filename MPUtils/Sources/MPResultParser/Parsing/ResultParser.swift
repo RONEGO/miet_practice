@@ -37,7 +37,12 @@ public final class ResultParser: IResultParser {
             throw .oneTestTypePerFile
         }
 
+        let suiteName = testableSummary.name ?? 
+            testableSummary.targetName ?? 
+            "UNKNOWN_\(testableSummary.identifierURL ?? UUID().uuidString)"
+
         return TestSuiteDTO(
+            name: suiteName,
             type: getFramework(testableSummary.testKind),
             cases: testableSummary.tests.map { testsCase in
                 let name = testsCase.name ??

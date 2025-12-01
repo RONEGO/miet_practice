@@ -7,7 +7,10 @@ final class TestSuiteResult: Model, Content, @unchecked Sendable {
 
     /// Уникальный идентификатор набора тестов (первичный ключ)
     @ID(custom: "id", generatedBy: .none) var id: UUID?
-    
+
+    /// Название набора тестов
+    @Field(key: "name") var name: String
+
     /// Связь с фреймворком тестирования
     @Parent(key: "framework_code") var framework: TestFramework
     
@@ -16,8 +19,9 @@ final class TestSuiteResult: Model, Content, @unchecked Sendable {
 
     init() { }
 
-    init(id: UUID? = nil, frameworkCode: TestFramework.IDValue, buildID: Build.IDValue) {
+    init(id: UUID? = nil, name: String, frameworkCode: TestFramework.IDValue, buildID: Build.IDValue) {
         self.id = id
+        self.name = name
         self.$framework.id = frameworkCode
         self.$build.id = buildID
     }

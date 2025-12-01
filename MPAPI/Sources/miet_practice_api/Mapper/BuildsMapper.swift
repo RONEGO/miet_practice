@@ -46,6 +46,7 @@ enum BuildsMapper {
         
         return TestSuiteResult(
             id: UUID(),
+            name: dto.name,
             frameworkCode: frameworkCode,
             buildID: buildId
         )

@@ -6,11 +6,12 @@ struct CreateTestResultTables: AsyncMigration {
             .field("id", .uuid, .identifier(auto: false))
             .field(
                 "framework_code",
-                .int,
+                .int8,
                 .required,
                 .references(DatabaseSchema.testFramework.rawValue, "code")
             )
             .field("build_id", .uuid, .required, .references(DatabaseSchema.build.rawValue, "id", onDelete: .cascade))
+            .field("name", .string, .required)
             .create()
 
         try await database.schema(DatabaseSchema.testCaseResult.rawValue)
@@ -26,7 +27,7 @@ struct CreateTestResultTables: AsyncMigration {
             .field("name", .string, .required)
             .field(
                 "status_code",
-                .int,
+                .int8,
                 .required,
                 .references(DatabaseSchema.testResultStatus.rawValue, "code")
             )

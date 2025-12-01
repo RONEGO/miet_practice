@@ -7,7 +7,7 @@ struct CreateUserTable: AsyncMigration {
             .field("name", .string, .required)
             .field(
                 "role_code",
-                .int,
+                .int8,
                 .required,
                 .references(DatabaseSchema.userRole.rawValue, "code")
             )
