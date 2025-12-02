@@ -12,16 +12,33 @@ source "$SCRIPT_DIR/Helpers/test_runner.sh"
 # Парсим аргументы
 CLEAR_CACHE=false
 BASE_URL=""
+TASK_ID=""
+GIT_BRANCH=""
 
-# Проверяем первый аргумент на --cache
-if [ "$1" = "--cache" ]; then
-    CLEAR_CACHE=true
-    # BASE_URL будет вторым аргументом
-    BASE_URL="$2"
-else
-    # BASE_URL будет первым аргументом
-    BASE_URL="$1"
-fi
+# Парсим аргументы
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --cache)
+            CLEAR_CACHE=true
+            shift
+            ;;
+        --task-id)
+            TASK_ID="$2"
+            shift 2
+            ;;
+        --git-branch)
+            GIT_BRANCH="$2"
+            shift 2
+            ;;
+        *)
+            # Если это не флаг, то это BASE_URL
+            if [ -z "$BASE_URL" ]; then
+                BASE_URL="$1"
+            fi
+            shift
+            ;;
+    esac
+done
 
 log ""
 # Очищаем кеш, если передан флаг --cache
@@ -42,7 +59,7 @@ log ""
 # Отправляем запрос на запуск сборки в начале скрипта (только если BASE_URL передан)
 if [ -n "$BASE_URL" ]; then
     REPORTER_CACHE_FILE="$CACHE_DIR/run_reporter_cache.json"
-    send_run_request "$BASE_URL" "$REPORTER_CACHE_FILE"
+    send_run_request "$BASE_URL" "$REPORTER_CACHE_FILE" "$TASK_ID" "$GIT_BRANCH"
 fi
 
 log ""

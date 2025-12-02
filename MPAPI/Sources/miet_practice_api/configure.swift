@@ -35,6 +35,11 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(MPCodedDictionaryGeneration<TestFramework>())
     app.migrations.add(MPCodedDictionaryGeneration<TestStatus>())
     app.migrations.add(MPCodedDictionaryGeneration<TaskStatus>())
+    
+    #if DEBUG
+    /// Создание тестовых данных (только для debug сборки)
+    app.migrations.add(CreateDebugTestData())
+    #endif
 
     // Запуск миграций автоматически при старте приложения
     try await app.autoMigrate()

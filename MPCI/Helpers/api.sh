@@ -11,12 +11,28 @@ get_absolute_path() {
 send_run_request() {
     local base_url="$1"
     local cache_file="$2"
+    local task_id="$3"  # Опциональный task_id
+    local git_branch="$4"  # Опциональный git_branch
     
     local absolute_path
     absolute_path=$(get_absolute_path "$cache_file")
     
     log_info "Отправляем запрос на запуск сборки..."
-    "$REPORTER_PATH" run "$base_url" "$absolute_path" || {
+    
+    # Формируем массив аргументов для команды
+    local args=("run")
+    
+    if [ -n "$task_id" ]; then
+        args+=("--task-id" "$task_id")
+    fi
+    
+    if [ -n "$git_branch" ]; then
+        args+=("--git-branch" "$git_branch")
+    fi
+    
+    args+=("$base_url" "$absolute_path")
+    
+    "$REPORTER_PATH" "${args[@]}" || {
         log_warn "Не удалось отправить запрос на запуск сборки"
         return 1
     }

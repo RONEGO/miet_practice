@@ -77,6 +77,13 @@ struct BuildsController: RouteCollection {
             throw Abort(.internalServerError, reason: "Build ID is missing")
         }
 
+        // Если с билдом связана задача, создаем уведомления
+        try await createNotificationsForTask(
+            build: build,
+            buildStatus: request.buildStatus,
+            req: req
+        )
+
         return CompleteBuildResponseDTO(
             buildId: buildId,
             message: "Build completed with status: \(request.buildStatus.rawValue)"
@@ -84,3 +91,57 @@ struct BuildsController: RouteCollection {
     }
 }
 
+private extension BuildsController {
+    /// Создает уведомления для QA и Developer, если с билдом связана задача
+    func createNotificationsForTask(
+        build: Build,
+        buildStatus: CompleteBuildRequestDTO.BuildStatusDTO,
+        req: Request
+    ) async throws {
+        // Загружаем задачу, если она связана с билдом
+        try await build.$task.load(on: req.db)
+        guard let task = build.task else {
+            // Если задачи нет, уведомления не создаем
+            return
+        }
+
+        // Загружаем связи задачи (assignee и qa)
+        try await task.$assignee.load(on: req.db)
+        try await task.$qa.load(on: req.db)
+
+        let sentStatusCode = try NotificationDeliveryStatus.getCode(.sent)
+        let sentAt = Date()
+
+        // Создаем уведомление для QA (если назначен и статус SUCCESS)
+        if buildStatus == .success, let qa = task.qa, let qaId = qa.id {
+            let qaNotification = NotificationLog(
+                id: UUID(),
+                payload: "Можно мануально проверять, авто-тесты пройдены",
+                sentAt: sentAt,
+                receiverID: qaId,
+                deliveryStatusCode: sentStatusCode
+            )
+            try await qaNotification.save(on: req.db)
+        }
+
+        // Создаем уведомление для Developer (если назначен)
+        if let developer = task.assignee, let developerId = developer.id {
+            let developerPayload: String
+            switch buildStatus {
+            case .success:
+                developerPayload = "Все готово к проверке."
+            case .failure:
+                developerPayload = "Сборка тестов сломана."
+            }
+
+            let developerNotification = NotificationLog(
+                id: UUID(),
+                payload: developerPayload,
+                sentAt: sentAt,
+                receiverID: developerId,
+                deliveryStatusCode: sentStatusCode
+            )
+            try await developerNotification.save(on: req.db)
+        }
+    }
+}
