@@ -20,7 +20,9 @@ struct UploadLogEndpoint: Endpoint {
 
     /// Запрос с File, созданным из Data
     var request: UploadLogRequestDTO {
-        return UploadLogRequestDTO(log: File(data: data, filename: fileName))
+        UploadLogRequestDTO(
+            log: File(data: data, filename: fileName)
+        )
     }
 
     /// Путь
