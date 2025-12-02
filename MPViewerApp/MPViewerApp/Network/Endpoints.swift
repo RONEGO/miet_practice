@@ -13,5 +13,9 @@ enum Endpoints {
     static func builds() -> String {
         "\(baseURL)/v1/builds"
     }
+    
+    static func testSuiteLog(testSuiteResultId: UUID) -> String {
+        "\(baseURL)/v1/test-suite/\(testSuiteResultId.uuidString)/log"
+    }
 }
 

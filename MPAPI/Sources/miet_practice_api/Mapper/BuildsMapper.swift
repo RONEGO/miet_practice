@@ -205,7 +205,8 @@ enum BuildsMapper {
         return TestSuiteDTO(
             name: model.name,
             type: frameworkDTO,
-            cases: cases
+            cases: cases,
+            testSuiteResultId: model.id
         )
     }
 }

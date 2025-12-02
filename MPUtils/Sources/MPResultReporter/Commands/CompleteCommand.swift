@@ -50,7 +50,7 @@ struct CompleteCommand: AsyncParsableCommand {
             )
         )
         
-        print("Build completed: \(result.message)")
+        print("\(result.message)")
     }
 }
 

@@ -12,11 +12,13 @@ struct TestSuite {
     let name: String
     let type: TestFramework
     let cases: [TestCase]
+    let testSuiteResultId: UUID?
 
     init(from dto: TestSuiteDTO) {
         self.name = dto.name
         self.type = TestFramework(from: dto.type)
         self.cases = dto.cases.map { TestCase(from: $0) }
+        self.testSuiteResultId = dto.testSuiteResultId
     }
 }
 

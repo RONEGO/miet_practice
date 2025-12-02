@@ -53,7 +53,7 @@ struct SubmitTestsCommand: AsyncParsableCommand {
         updatedCache.sentTestSuiteID = result.testSuiteId.uuidString
         try save(updatedCache, to: options.cacheFilePath)
         
-        print("Test suite '\(testSuite.name)' submitted: \(result.message) (test_suite_id: \(result.testSuiteId))")
+        print("Вязанка тестов (test_suite_id: \(result.testSuiteId)) '\(testSuite.name)' отправлена на сервер: \(result.message)")
     }
 }
 

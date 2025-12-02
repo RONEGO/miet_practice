@@ -46,11 +46,11 @@ struct BuildView: View {
 
             if isExpanded {
                 ForEach(model.testSuites, id: \.name) { testSuite in
-                    TestSuiteView(testSuite: testSuite)
-
                     Rectangle()
                         .frame(maxWidth: .infinity, maxHeight: 0.75)
                         .foregroundStyle(Color.gray)
+                    
+                    TestSuiteView(testSuite: testSuite)
                 }
             }
         }

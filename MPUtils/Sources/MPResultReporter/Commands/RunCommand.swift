@@ -39,6 +39,7 @@ struct RunCommand: AsyncParsableCommand {
         )
         let cache = MPResultReporterCache(buildID: result.buildId.uuidString)
         try save(cache, to: options.cacheFilePath)
+        print("Билд отправлен на сервер: \(result.buildId)")
     }
 }
 

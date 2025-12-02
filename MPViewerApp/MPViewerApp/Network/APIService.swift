@@ -42,6 +42,29 @@ final class APIService {
             throw APIError.decodingError(error)
         }
     }
+    
+    func fetchTestSuiteLog(testSuiteResultId: UUID) async throws -> String {
+        let urlString = Endpoints.testSuiteLog(testSuiteResultId: testSuiteResultId)
+        guard let url = URL(string: urlString) else {
+            throw APIError.invalidURL
+        }
+        
+        let (data, response) = try await session.data(from: url)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.httpError(statusCode: httpResponse.statusCode)
+        }
+        
+        guard let logText = String(data: data, encoding: .utf8) else {
+            throw APIError.decodingError(NSError(domain: "Failed to decode log as UTF-8", code: -1))
+        }
+        
+        return logText
+    }
 }
 
 enum APIError: Error {

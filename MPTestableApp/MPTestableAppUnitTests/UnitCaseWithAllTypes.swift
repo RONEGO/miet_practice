@@ -16,7 +16,7 @@ final class UnitCaseWithAllTypes: XCTestCase {
         throw XCTSkip()
     }
 
-    func test_failure() async throws {
-        XCTAssertTrue(false)
-    }
+//    func test_failure() async throws {
+//        XCTAssertTrue(false)
+//    }
 }

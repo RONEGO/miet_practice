@@ -11,6 +11,7 @@ struct TestSuiteView: View {
     let testSuite: TestSuite
 
     @State private var isExpanded: Bool = false
+    @State private var showLogs = false
 
     var body: some View {
         VStack {
@@ -22,6 +23,15 @@ struct TestSuiteView: View {
                     .foregroundStyle(Color.black)
 
                 Text(testSuite.name)
+
+                if let testSuiteResultId = testSuite.testSuiteResultId {
+                    Button("See logs") {
+                        showLogs = true
+                    }
+                    .sheet(isPresented: $showLogs) {
+                        LogView(testSuiteResultId: testSuiteResultId)
+                    }
+                }
 
                 Spacer()
 

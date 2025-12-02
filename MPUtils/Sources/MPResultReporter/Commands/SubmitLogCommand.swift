@@ -54,7 +54,7 @@ struct SubmitLogCommand: AsyncParsableCommand {
             )
         )
         
-        print("Log file uploaded: \(result.message) (artefact_id: \(result.artefactId))")
+        print("Файл с логами сборки (artefact_id: \(result.artefactId)) отправлен на сервер: \(result.message)")
     }
 }
 
