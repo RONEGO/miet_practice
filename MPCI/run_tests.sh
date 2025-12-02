@@ -18,7 +18,7 @@ GIT_BRANCH=""
 # Парсим аргументы
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --cache)
+        --clear)
             CLEAR_CACHE=true
             shift
             ;;

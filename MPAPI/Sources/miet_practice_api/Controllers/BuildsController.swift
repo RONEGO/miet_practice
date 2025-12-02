@@ -1,4 +1,5 @@
 import Fluent
+import Foundation
 import Vapor
 import MPDTO
 
@@ -7,6 +8,7 @@ struct BuildsController: RouteCollection {
         let builds = routes.grouped("v1", "builds")
         builds.post("run", use: run)
         builds.patch("complete", use: completeBuild)
+        builds.get(use: getAllBuilds)
     }
     
     /// POST /v1/builds/run
@@ -88,6 +90,70 @@ struct BuildsController: RouteCollection {
             buildId: buildId,
             message: "Build completed with status: \(request.buildStatus.rawValue)"
         )
+    }
+    
+    /// GET /v1/builds?page=1&per_page=10
+    /// Получает все сборки с их тестами с поддержкой пагинации
+    func getAllBuilds(req: Request) async throws -> GetBuildsResponseDTO {
+        // Получаем параметры пагинации из query string
+        let page = req.query[Int.self, at: "page"] ?? 1
+        let perPage = req.query[Int.self, at: "per_page"] ?? 10
+        
+        // Валидация параметров
+        guard page > 0 else {
+            throw Abort(.badRequest, reason: "Page must be greater than 0")
+        }
+        guard perPage > 0 && perPage <= 100 else {
+            throw Abort(.badRequest, reason: "per_page must be between 1 and 100")
+        }
+        
+        // Вычисляем offset и limit
+        let offset = (page - 1) * perPage
+        let limit = perPage
+        
+        // Загружаем сборки с пагинацией (сортируем по дате создания, новые первые)
+        let builds = try await Build.query(on: req.db)
+            .sort(\.$startedAt, .descending)
+            .range(offset..<(offset + limit))
+            .all()
+        
+        // Загружаем статусы для всех сборок
+        for build in builds {
+            try await build.$status.load(on: req.db)
+        }
+        
+        // Преобразуем каждую сборку в DTO
+        let buildInfos = try await builds.asyncMap { build in
+            guard let buildId = build.id else {
+                throw Abort(.internalServerError, reason: "Build ID is missing")
+            }
+            
+            let buildStatus = build.status.value.rawValue
+            
+            // Загружаем все тест-сьюты для этой сборки
+            let testSuites = try await TestSuiteResult.query(on: req.db)
+                .filter(\.$build.$id == buildId)
+                .all()
+            
+            // Преобразуем каждый сьют в DTO
+            let testSuiteDTOs = try await testSuites.asyncMap { suite in
+                try await BuildsMapper.mapTestSuiteResultToDTO(suite, on: req.db)
+            }
+            
+            return GetBuildsResponseDTO.BuildInfoDTO(
+                buildId: buildId,
+                buildStatus: buildStatus,
+                testSuites: testSuiteDTOs
+            )
+        }
+        
+        // Создаем метаданные пагинации
+        let pagination = GetBuildsResponseDTO.PaginationInfoDTO(
+            page: page,
+            perPage: perPage
+        )
+        
+        return GetBuildsResponseDTO(builds: buildInfos, pagination: pagination)
     }
 }
 

@@ -112,4 +112,113 @@ enum BuildsMapper {
         
         return testResult
     }
+    
+    // MARK: - Reverse Mapping (Model to DTO)
+    
+    /// Преобразует TestFrameworkEnum в TestFrameworkDTO
+    static func mapTestFrameworkEnumToDTO(_ enumValue: TestFrameworkEnum) -> TestFrameworkDTO {
+        switch enumValue {
+        case .unknown:
+            return .unknown
+        case .xcodeUI:
+            return .xctestUI
+        case .xcodeUnit:
+            return .xctestUnit
+        }
+    }
+    
+    /// Преобразует TestStatusEnum в TestStatusDTO
+    static func mapTestStatusEnumToDTO(_ enumValue: TestStatusEnum) -> TestStatusDTO {
+        switch enumValue {
+        case .unknown:
+            return .unknown
+        case .success:
+            return .success
+        case .skipped:
+            return .skipped
+        case .failure:
+            return .failure
+        }
+    }
+    
+    /// Преобразует TestResult модель в TestDTO
+    static func mapTestResultToDTO(_ model: TestResult, on database: Database) throws -> TestDTO {
+        let statusDTO = mapTestStatusEnumToDTO(model.status.value)
+        let duration = model.duration.map { Double($0) / 1000.0 } // Преобразуем из миллисекунд в секунды
+        
+        return TestDTO(
+            name: model.name,
+            statusCode: statusDTO,
+            duration: duration
+        )
+    }
+    
+    /// Преобразует TestCaseResult модель в TestCaseDTO
+    static func mapTestCaseResultToDTO(_ model: TestCaseResult, on database: Database) async throws -> TestCaseDTO {
+        // Загружаем все тесты для этого кейса
+        let testResults = try await TestResult.query(on: database)
+            .filter(\.$testCase.$id == model.id!)
+            .all()
+        
+        // Загружаем статусы для всех тестов
+        for testResult in testResults {
+            try await testResult.$status.load(on: database)
+        }
+        
+        let tests = try testResults.map { try mapTestResultToDTO($0, on: database) }
+        let duration = model.duration.map { Double($0) / 1000.0 } ?? 0.0 // Преобразуем из миллисекунд в секунды
+        
+        // Определяем статус кейса на основе статусов тестов
+        let statusCode: TestStatusDTO
+        if tests.isEmpty {
+            statusCode = .unknown
+        } else if tests.allSatisfy({ $0.statusCode == .success }) {
+            statusCode = .success
+        } else if tests.contains(where: { $0.statusCode == .failure }) {
+            statusCode = .failure
+        } else {
+            statusCode = .skipped
+        }
+        
+        return TestCaseDTO(
+            name: model.name,
+            statusCode: statusCode,
+            duration: duration,
+            tests: tests
+        )
+    }
+    
+    /// Преобразует TestSuiteResult модель в TestSuiteDTO
+    static func mapTestSuiteResultToDTO(_ model: TestSuiteResult, on database: Database) async throws -> TestSuiteDTO {
+        // Загружаем фреймворк
+        try await model.$framework.load(on: database)
+        let frameworkDTO = mapTestFrameworkEnumToDTO(model.framework.value)
+        
+        // Загружаем все тест-кейсы для этого сьюта
+        let testCases = try await TestCaseResult.query(on: database)
+            .filter(\.$suite.$id == model.id!)
+            .all()
+        
+        // Преобразуем каждый кейс в DTO
+        let cases = try await testCases.asyncMap { try await mapTestCaseResultToDTO($0, on: database) }
+        
+        return TestSuiteDTO(
+            name: model.name,
+            type: frameworkDTO,
+            cases: cases
+        )
+    }
+}
+
+// Вспомогательное расширение для async map
+extension Sequence {
+    func asyncMap<T>(
+        _ transform: @escaping (Element) async throws -> T
+    ) async rethrows -> [T] {
+        var results: [T] = []
+        for element in self {
+            try await results.append(transform(element))
+        }
+        return results
+    }
 }
