@@ -5,39 +5,13 @@ import Vapor
 public struct GetBuildsResponseDTO: Content {
     public enum CodingKeys: String, CodingKey {
         case builds
-        case pagination
     }
-    
+
     /// Массив сборок с их тестами
     public let builds: [BuildInfoDTO]
-    
-    /// Метаданные пагинации
-    public let pagination: PaginationInfoDTO
-    
-    public init(builds: [BuildInfoDTO], pagination: PaginationInfoDTO) {
+
+    public init(builds: [BuildInfoDTO]) {
         self.builds = builds
-        self.pagination = pagination
-    }
-}
-
-extension GetBuildsResponseDTO {
-    /// Метаданные пагинации
-    public struct PaginationInfoDTO: Content {
-        public enum CodingKeys: String, CodingKey {
-            case page
-            case perPage = "per_page"
-        }
-        
-        /// Текущая страница (начиная с 1)
-        public let page: Int
-        
-        /// Количество элементов на странице
-        public let perPage: Int
-
-        public init(page: Int, perPage: Int) {
-            self.page = page
-            self.perPage = perPage
-        }
     }
 }
 

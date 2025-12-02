@@ -21,7 +21,9 @@ send_run_request() {
     
     # Формируем массив аргументов для команды
     local args=("run")
-    
+
+    args+=("$base_url" "$absolute_path")
+
     if [ -n "$task_id" ]; then
         args+=("--task-id" "$task_id")
     fi
@@ -29,9 +31,7 @@ send_run_request() {
     if [ -n "$git_branch" ]; then
         args+=("--git-branch" "$git_branch")
     fi
-    
-    args+=("$base_url" "$absolute_path")
-    
+
     "$REPORTER_PATH" "${args[@]}" || {
         log_warn "Не удалось отправить запрос на запуск сборки"
         return 1

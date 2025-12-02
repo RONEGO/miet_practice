@@ -92,29 +92,13 @@ struct BuildsController: RouteCollection {
         )
     }
     
-    /// GET /v1/builds?page=1&per_page=10
+    /// GET /v1/builds
     /// Получает все сборки с их тестами с поддержкой пагинации
     func getAllBuilds(req: Request) async throws -> GetBuildsResponseDTO {
-        // Получаем параметры пагинации из query string
-        let page = req.query[Int.self, at: "page"] ?? 1
-        let perPage = req.query[Int.self, at: "per_page"] ?? 10
-        
-        // Валидация параметров
-        guard page > 0 else {
-            throw Abort(.badRequest, reason: "Page must be greater than 0")
-        }
-        guard perPage > 0 && perPage <= 100 else {
-            throw Abort(.badRequest, reason: "per_page must be between 1 and 100")
-        }
-        
-        // Вычисляем offset и limit
-        let offset = (page - 1) * perPage
-        let limit = perPage
-        
+
         // Загружаем сборки с пагинацией (сортируем по дате создания, новые первые)
         let builds = try await Build.query(on: req.db)
             .sort(\.$startedAt, .descending)
-            .range(offset..<(offset + limit))
             .all()
         
         // Загружаем статусы для всех сборок
@@ -146,14 +130,8 @@ struct BuildsController: RouteCollection {
                 testSuites: testSuiteDTOs
             )
         }
-        
-        // Создаем метаданные пагинации
-        let pagination = GetBuildsResponseDTO.PaginationInfoDTO(
-            page: page,
-            perPage: perPage
-        )
-        
-        return GetBuildsResponseDTO(builds: buildInfos, pagination: pagination)
+
+        return GetBuildsResponseDTO(builds: buildInfos)
     }
 }
 
