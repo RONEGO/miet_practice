@@ -109,3 +109,6 @@ xcdebugger/
 
 # Cache CI
 */Cache/*
+*/Public/*
+*/run_parser
+*/run_reporter

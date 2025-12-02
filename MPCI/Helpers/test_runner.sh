@@ -59,6 +59,9 @@ run_all_tests() {
             
             # Отправляем результаты теста сразу после парсинга
             send_submit_single_test_result "$base_url" "$cache_file" "$parsing_file_path"
+            
+            # Отправляем файл лога сразу после отправки результатов теста
+            send_log_file "$base_url" "$cache_file" "$build_logs_path"
         fi
         
         echo ""

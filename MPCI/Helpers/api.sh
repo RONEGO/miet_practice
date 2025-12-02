@@ -62,3 +62,27 @@ send_complete_request() {
     }
 }
 
+# Отправка файла лога для test suite
+send_log_file() {
+    local base_url="$1"
+    local cache_file="$2"
+    local log_file_path="$3"
+    
+    local absolute_path
+    absolute_path=$(get_absolute_path "$cache_file")
+    
+    if [ ! -f "$log_file_path" ]; then
+        log_warn "Файл лога не найден: $log_file_path"
+        return 1
+    fi
+    
+    local log_absolute_path
+    log_absolute_path=$(get_absolute_path "$log_file_path")
+
+    log_info "Отправляем файл лога..."
+    "$REPORTER_PATH" "$base_url" "$absolute_path" --submit-log --test-suite-log "$log_absolute_path" || {
+        log_warn "Не удалось отправить файл лога"
+        return 1
+    }
+}
+

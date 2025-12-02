@@ -40,6 +40,13 @@ struct MPResultReporter: AsyncParsableCommand {
     
     @Option(name: .customLong("test-results-file"), help: "Path to test results JSON file (required for --submit-tests)")
     var testResultsFile: String?
+    
+    @Flag(name: .customLong("submit-log"), help: "Flag to submit log file")
+    var submitLog: Bool = false
+
+    // Опции для --test-results-log
+    @Option(name: .customLong("test-suite-log"), help: "Path to log of test suite (required for --submit-log)")
+    var testSuiteLog: String?
 
     func run() async throws {
         guard let url = URL(string: baseURL) else {
@@ -57,8 +64,10 @@ struct MPResultReporter: AsyncParsableCommand {
             try await sendCompleteRequest(perfomer)
         } else if submitTests {
             try await sendSubmitTestResultsRequest(perfomer)
+        } else if submitLog {
+            try await sendLogRequest(perfomer)
         } else {
-            throw NSError(domain: "Either --run, --complete, or --submit-tests flag is required", code: -1)
+            throw NSError(domain: "Either --run, --complete, --submit-tests, or --submit-log flag is required", code: -1)
         }
     }
     
@@ -141,6 +150,42 @@ struct MPResultReporter: AsyncParsableCommand {
         try save(updatedCache, to: cacheFilePath)
         
         print("Test suite '\(testSuite.name)' submitted: \(result.message) (test_suite_id: \(result.testSuiteId))")
+    }
+    
+    private func sendLogRequest(
+        _ perfomer: IRequestPerformer
+    ) async throws {
+        // Получаем данные из кеша
+        let cache: MPResultReporterCache = try upload(from: cacheFilePath)
+        guard
+            let testSuiteResultIDString = cache.sentTestSuiteID,
+            let testSuiteResultID = UUID(uuidString: testSuiteResultIDString)
+        else {
+            throw NSError(domain: "Test suite result ID not found in cache or invalid", code: -1)
+        }
+        
+        guard let testSuiteLog else {
+            throw NSError(domain: "Log file path not found in cache", code: -1)
+        }
+        
+        // Проверяем существование файла
+        let fileManager = FileManager.default
+        guard fileManager.fileExists(atPath: testSuiteLog) else {
+            throw NSError(domain: "Log file not found at path: \(testSuiteLog)", code: -1)
+        }
+
+        let data = try Data(contentsOf: URL(filePath: testSuiteLog))
+
+        // Отправляем файл
+        let result = try await perfomer.perform(
+            UploadLogEndpoint(
+                testSuiteResultId: testSuiteResultID,
+                data: String(data: data, encoding: .utf8) ?? "EMPTY",
+                fileName: "\(testSuiteResultID).log"
+            )
+        )
+        
+        print("Log file uploaded: \(result.message) (artefact_id: \(result.artefactId))")
     }
 }
 
