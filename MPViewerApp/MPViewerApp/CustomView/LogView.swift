@@ -18,17 +18,17 @@ struct LogView: View {
         NavigationView {
             Group {
                 if isLoading {
-                    ProgressView("Loading logs...")
+                    ProgressView("Загрузка логов...")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if let error = error {
                     VStack {
-                        Text("Error loading logs")
+                        Text("Ошибка загрузки логов")
                             .font(.headline)
                         Text(error.localizedDescription)
                             .font(.caption)
                             .foregroundColor(.red)
                             .padding()
-                        Button("Retry") {
+                        Button("Повторить") {
                             loadLogs()
                         }
                     }
@@ -42,11 +42,11 @@ struct LogView: View {
                     }
                 }
             }
-            .navigationTitle("Test Suite Logs")
+            .navigationTitle("Логи набора тестов")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                    Button("Готово") {
                         dismiss()
                     }
                 }

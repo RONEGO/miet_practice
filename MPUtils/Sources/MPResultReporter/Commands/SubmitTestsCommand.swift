@@ -13,18 +13,18 @@ import MPCore
 struct SubmitTestsCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "submit-tests",
-        abstract: "Submit test results"
+        abstract: "Отправить результаты тестов"
     )
     
     @OptionGroup
     var options: MPResultReporterGlobalOptions
     
-    @Option(name: .customLong("test-results-file"), help: "Path to test results JSON file (required)")
+    @Option(name: .customLong("test-results-file"), help: "Путь к JSON файлу с результатами тестов (обязательно)")
     var testResultsFile: String
     
     func run() async throws {
         guard let url = URL(string: options.baseURL) else {
-            throw NSError(domain: "Invalid base URL", code: -1)
+            throw NSError(domain: "Неверный базовый URL", code: -1)
         }
         let perfomer = RequestPerformer(baseURL: url)
         
@@ -34,7 +34,7 @@ struct SubmitTestsCommand: AsyncParsableCommand {
             let buildIDString = cache.buildID,
             let buildID = UUID(uuidString: buildIDString)
         else {
-            throw NSError(domain: "Build ID not found in cache or invalid", code: -1)
+            throw NSError(domain: "ID сборки не найден в кеше или неверный", code: -1)
         }
         
         // Загружаем test suite из файла

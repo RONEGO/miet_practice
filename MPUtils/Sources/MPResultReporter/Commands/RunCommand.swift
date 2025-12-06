@@ -13,21 +13,21 @@ import MPCore
 struct RunCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "run",
-        abstract: "Run build"
+        abstract: "Запустить сборку"
     )
     
     @OptionGroup
     var options: MPResultReporterGlobalOptions
     
-    @Option(name: .customLong("task-id"), help: "Task ID (optional)")
+    @Option(name: .customLong("task-id"), help: "ID задачи (опционально)")
     var taskId: String?
     
-    @Option(name: .customLong("git-branch"), help: "Git branch (optional)")
+    @Option(name: .customLong("git-branch"), help: "Ветка Git (опционально)")
     var gitBranch: String?
     
     func run() async throws {
         guard let url = URL(string: options.baseURL) else {
-            throw NSError(domain: "Invalid base URL", code: -1)
+            throw NSError(domain: "Неверный базовый URL", code: -1)
         }
         let perfomer = RequestPerformer(baseURL: url)
         

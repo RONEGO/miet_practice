@@ -14,7 +14,7 @@ import MPCore
 @main
 struct MPResultReporter: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
-        abstract: "MP Result Reporter",
+        abstract: "MP Репортер результатов",
         subcommands: [
             RunCommand.self,
             CompleteCommand.self,

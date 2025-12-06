@@ -109,6 +109,7 @@ xcdebugger/
 
 # Cache CI
 */Cache/*
+*/MPAIDocuments/*
 */Public/*
 */run_parser
 */run_reporter

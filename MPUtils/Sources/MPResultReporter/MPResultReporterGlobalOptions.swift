@@ -8,9 +8,9 @@
 import ArgumentParser
 
 struct MPResultReporterGlobalOptions: ParsableArguments {
-    @Argument(help: "Base url for endpoints")
+    @Argument(help: "Базовый URL для эндпоинтов")
     var baseURL: String
 
-    @Argument(help: "The path to a cache file where cache will be stored")
+    @Argument(help: "Путь к файлу кеша, где будет храниться кеш")
     var cacheFilePath: String
 }

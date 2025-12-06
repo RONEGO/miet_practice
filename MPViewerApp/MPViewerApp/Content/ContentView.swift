@@ -22,7 +22,7 @@ struct ContentView: View {
                     Image(systemName: "arrow.clockwise.circle")
                 }
             }
-            .navigationTitle("Builds")
+            .navigationTitle("Сборки")
     }
 
     var buildsContent: some View {
@@ -39,7 +39,7 @@ struct ContentView: View {
             Color.clear
                 .frame(height: 1)
                 .onAppear {
-                    print("Reached bottom!")
+                    print("Достигнуто дно!")
                 }
         }
     }

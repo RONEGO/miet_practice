@@ -18,7 +18,7 @@ public func upload<Value: Decodable>(
         throw NSError(
             domain: "FileNotFound",
             code: -1,
-            userInfo: [NSLocalizedDescriptionKey: "File not found at path: \(path)"]
+            userInfo: [NSLocalizedDescriptionKey: "Файл не найден по пути: \(path)"]
         )
     }
 

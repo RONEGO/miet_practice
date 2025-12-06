@@ -60,7 +60,7 @@ final class APIService {
         }
         
         guard let logText = String(data: data, encoding: .utf8) else {
-            throw APIError.decodingError(NSError(domain: "Failed to decode log as UTF-8", code: -1))
+            throw APIError.decodingError(NSError(domain: "Не удалось декодировать лог как UTF-8", code: -1))
         }
         
         return logText
@@ -76,13 +76,13 @@ enum APIError: Error {
     var localizedDescription: String {
         switch self {
         case .invalidURL:
-            return "Invalid URL"
+            return "Неверный URL"
         case .invalidResponse:
-            return "Invalid response"
+            return "Неверный ответ"
         case .httpError(let statusCode):
-            return "HTTP error with status code: \(statusCode)"
+            return "HTTP ошибка со статус-кодом: \(statusCode)"
         case .decodingError(let error):
-            return "Decoding error: \(error.localizedDescription)"
+            return "Ошибка декодирования: \(error.localizedDescription)"
         }
     }
 }

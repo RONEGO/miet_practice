@@ -10,7 +10,7 @@ import Combine
 final class ContentViewModel: ObservableObject {
     @MainActor @Published private(set) var state = ContentViewState() {
         didSet {
-            print("Yegor Debug \(state)")
+            print("Отладка: \(state)")
         }
     }
 

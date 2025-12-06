@@ -17,7 +17,7 @@ struct TestsController: RouteCollection {
         
         // Проверяем существование сборки
         guard try await Build.find(request.buildId, on: req.db) != nil else {
-            throw Abort(.notFound, reason: "Build with id \(request.buildId) not found")
+            throw Abort(.notFound, reason: "Сборка с id \(request.buildId) не найдена")
         }
         
         // Преобразуем TestSuiteDTO в TestSuiteResult модель
@@ -48,7 +48,7 @@ struct TestsController: RouteCollection {
         try await testSuite.save(on: req.db)
         
         guard let suiteId = testSuite.id else {
-            throw Abort(.internalServerError, reason: "Failed to generate test suite ID")
+            throw Abort(.internalServerError, reason: "Не удалось сгенерировать ID набора тестов")
         }
         
         // Обрабатываем каждый тест-кейс
@@ -72,7 +72,7 @@ struct TestsController: RouteCollection {
             try await testCase.save(on: req.db)
             
             guard let caseId = testCase.id else {
-                throw Abort(.internalServerError, reason: "Failed to generate test case ID")
+                throw Abort(.internalServerError, reason: "Не удалось сгенерировать ID тест-кейса")
             }
             
             // Обрабатываем каждый тест
@@ -104,7 +104,7 @@ struct TestsController: RouteCollection {
         
         return SubmitTestResultsResponseDTO(
             buildId: request.buildId,
-            message: "Test results updated successfully",
+            message: "Результаты тестов успешно обновлены",
             testSuiteId: suiteId
         )
     }
@@ -115,12 +115,12 @@ struct TestsController: RouteCollection {
         // Получаем test_suite_result_id из параметров маршрута
         guard let testSuiteResultIdString = req.parameters.get("test_suite_result_id"),
               let testSuiteResultId = UUID(uuidString: testSuiteResultIdString) else {
-            throw Abort(.badRequest, reason: "Invalid test_suite_result_id")
+            throw Abort(.badRequest, reason: "Неверный test_suite_result_id")
         }
         
         // Проверяем существование TestSuiteResult
         guard try await TestSuiteResult.find(testSuiteResultId, on: req.db) != nil else {
-            throw Abort(.notFound, reason: "Test suite result with id \(testSuiteResultId) not found")
+            throw Abort(.notFound, reason: "Результат набора тестов с id \(testSuiteResultId) не найден")
         }
         
         // Декодируем запрос с файлом
@@ -138,7 +138,7 @@ struct TestsController: RouteCollection {
             // Используем существующий артефакт
             artefact = existing
             guard let id = existing.id else {
-                throw Abort(.internalServerError, reason: "Artefact ID is missing")
+                throw Abort(.internalServerError, reason: "ID артефакта отсутствует")
             }
             artefactId = id
         } else {
@@ -161,7 +161,7 @@ struct TestsController: RouteCollection {
 
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: uploadsDirectory) else {
-            throw Abort(.internalServerError, reason: "Upload directory is missing")
+            throw Abort(.internalServerError, reason: "Директория для загрузки отсутствует")
         }
         
         // Сохраняем файл с именем {artefact_id}.log
@@ -180,7 +180,7 @@ struct TestsController: RouteCollection {
         return UploadLogResponseDTO(
             testSuiteResultId: testSuiteResultId,
             artefactId: artefactId,
-            message: "Log file uploaded successfully",
+            message: "Файл лога успешно загружен",
             logsUrl: logsUrl
         )
     }
@@ -191,24 +191,24 @@ struct TestsController: RouteCollection {
         // Получаем test_suite_result_id из параметров маршрута
         guard let testSuiteResultIdString = req.parameters.get("test_suite_result_id"),
               let testSuiteResultId = UUID(uuidString: testSuiteResultIdString) else {
-            throw Abort(.badRequest, reason: "Invalid test_suite_result_id")
+            throw Abort(.badRequest, reason: "Неверный test_suite_result_id")
         }
         
         // Проверяем существование TestSuiteResult
         guard try await TestSuiteResult.find(testSuiteResultId, on: req.db) != nil else {
-            throw Abort(.notFound, reason: "Test suite result with id \(testSuiteResultId) not found")
+            throw Abort(.notFound, reason: "Результат набора тестов с id \(testSuiteResultId) не найден")
         }
         
         // Находим артефакт
         guard let artefact = try await TestSuiteResultArtefact.query(on: req.db)
             .filter(\.$testSuiteResult.$id == testSuiteResultId)
             .first() else {
-            throw Abort(.notFound, reason: "Log file not found for test suite result with id \(testSuiteResultId)")
+            throw Abort(.notFound, reason: "Файл лога не найден для результата набора тестов с id \(testSuiteResultId)")
         }
         
         // Проверяем наличие logsUrl
         guard let logsUrl = artefact.logsUrl, !logsUrl.isEmpty else {
-            throw Abort(.notFound, reason: "Log file URL is not set for test suite result with id \(testSuiteResultId)")
+            throw Abort(.notFound, reason: "URL файла лога не установлен для результата набора тестов с id \(testSuiteResultId)")
         }
         
         // Формируем полный путь к файлу
@@ -218,7 +218,7 @@ struct TestsController: RouteCollection {
         // Проверяем существование файла
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: filePath) else {
-            throw Abort(.notFound, reason: "Log file not found at path: \(logsUrl)")
+            throw Abort(.notFound, reason: "Файл лога не найден по пути: \(logsUrl)")
         }
         
         // Читаем файл

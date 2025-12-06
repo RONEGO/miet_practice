@@ -25,7 +25,7 @@ struct TestSuiteView: View {
                 Text(testSuite.name)
 
                 if let testSuiteResultId = testSuite.testSuiteResultId {
-                    Button("See logs") {
+                    Button("Просмотр логов") {
                         showLogs = true
                     }
                     .sheet(isPresented: $showLogs) {

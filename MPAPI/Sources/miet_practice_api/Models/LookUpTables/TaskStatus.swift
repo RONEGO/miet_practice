@@ -3,15 +3,11 @@ import Vapor
 
 enum TaskStatusEnum: String, LookUpTableEnum {
     /// Новая задача
-    case new = "NEW"
+    case backlog = "TODO"
     /// В работе
     case inProgress = "IN_PROGRESS"
-    /// На проверке
-    case inReview = "IN_REVIEW"
     /// Выполнена
     case completed = "COMPLETED"
-    /// Отменена
-    case cancelled = "CANCELLED"
     /// Неизвестный статус (fallback)
     case unknown = "UNKNOWN"
 }

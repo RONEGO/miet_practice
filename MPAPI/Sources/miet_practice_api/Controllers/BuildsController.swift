@@ -20,7 +20,7 @@ struct BuildsController: RouteCollection {
         // Проверяем существование Task, если taskId передан
         if let taskId = request.taskId {
             guard try await Task.find(taskId, on: req.db) != nil else {
-                throw Abort(.notFound, reason: "Task with id \(taskId) not found")
+                throw Abort(.notFound, reason: "Задача с id \(taskId) не найдена")
             }
         }
         
@@ -40,7 +40,7 @@ struct BuildsController: RouteCollection {
         
         // Возвращаем ответ с build_id
         guard let buildId = build.id else {
-            throw Abort(.internalServerError, reason: "Failed to generate build ID")
+            throw Abort(.internalServerError, reason: "Не удалось сгенерировать ID сборки")
         }
         
         return RunBuildResponseDTO(buildId: buildId)
@@ -54,7 +54,7 @@ struct BuildsController: RouteCollection {
 
         // Находим сборку по ID
         guard let build = try await Build.find(request.buildId, on: req.db) else {
-            throw Abort(.notFound, reason: "Build with id \(request.buildId) not found")
+            throw Abort(.notFound, reason: "Сборка с id \(request.buildId) не найдена")
         }
         
         // Загружаем статус для проверки
@@ -62,7 +62,7 @@ struct BuildsController: RouteCollection {
         
         // Проверяем, что сборка в состоянии RUNNING
         guard build.status.value == .running else {
-            throw Abort(.badRequest, reason: "Build is not in RUNNING status. Current status: \(build.status.value.rawValue)")
+            throw Abort(.badRequest, reason: "Сборка не в статусе RUNNING. Текущий статус: \(build.status.value.rawValue)")
         }
         
         // Валидируем новый статус (должен быть SUCCESS или FAILURE)
@@ -76,7 +76,7 @@ struct BuildsController: RouteCollection {
         try await build.save(on: req.db)
 
         guard let buildId = build.id else {
-            throw Abort(.internalServerError, reason: "Build ID is missing")
+            throw Abort(.internalServerError, reason: "ID сборки отсутствует")
         }
 
         // Если с билдом связана задача, создаем уведомления
@@ -88,7 +88,7 @@ struct BuildsController: RouteCollection {
 
         return CompleteBuildResponseDTO(
             buildId: buildId,
-            message: "Build completed with status: \(request.buildStatus.rawValue)"
+            message: "Сборка завершена со статусом: \(request.buildStatus.rawValue)"
         )
     }
     
@@ -109,7 +109,7 @@ struct BuildsController: RouteCollection {
         // Преобразуем каждую сборку в DTO
         let buildInfos = try await builds.asyncMap { build in
             guard let buildId = build.id else {
-                throw Abort(.internalServerError, reason: "Build ID is missing")
+                throw Abort(.internalServerError, reason: "ID сборки отсутствует")
             }
             
             let buildStatus = build.status.value.rawValue
